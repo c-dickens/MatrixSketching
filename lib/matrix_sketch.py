@@ -29,7 +29,7 @@ class MatrixSketch:
         Returns the sketch self.sketch_matrix either in full form or in SVD form
         """
         if in_svd:
-            u,s,vt = np.linalg.svd(self.sketch_matrix)
+            u,s,vt = np.linalg.svd(self.sketch_matrix,full_matrices=False)
             return u,s,vt
         else:
             return self.sketch_matrix
