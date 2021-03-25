@@ -4,6 +4,7 @@ import pytest
 import numpy as np
 from gaussian_sketch import GaussianSketch
 from count_sketch import CountSketch
+from sparse_jlt import SparseJLT
 import warnings
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
@@ -29,7 +30,8 @@ def test_summary_size(data_to_test):
     n,d = data_to_test.shape
     sketches = {
         'gauss' : GaussianSketch(sketch_dim,n,d),
-        'countsketch' : CountSketch(sketch_dim,n,d)
+        'countsketch' : CountSketch(sketch_dim,n,d),
+        'sjltsketch' : SparseJLT(sketch_dim,n,d,col_sparsity=10)
     }
     for sk_name, sk_method in sketches.items():
         g = sk_method
