@@ -10,8 +10,6 @@ class GaussianSketch(MatrixSketch):
 
         super(GaussianSketch,self).__init__(sketch_dim)
         super(GaussianSketch,self)._prepare_sketch(n_data_rows, n_data_cols)
-        self._sample()
-        print('Init Gausss')
 
     def _sample(self,seed=100):
         """
@@ -23,7 +21,7 @@ class GaussianSketch(MatrixSketch):
         S /= np.sqrt(self.sketch_dim)
         return S
 
-    def sketch_matrix(self,mat,seed=None):
+    def sketch(self,mat,seed=None):
         S = self._sample(seed)
         self.sketch_matrix = S@mat
         

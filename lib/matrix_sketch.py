@@ -12,10 +12,15 @@ class MatrixSketch:
         """
         Inputs: 
             sketch_dim - the number of rows to project down to for B
+
+        Sets:
+            self.sparse_data_flag - bool to indicate if reference to sparse data is set.
+            self.dense_data_flag - bool to indicate if reference to dense data is set.
         """
         self.sketch_dim = sketch_dim
-        print('Init MatrixSketch')
-        print('Sketch Dim:', self.sketch_dim)
+        self.sparse_data_flag = False
+        self.dense_data_flag = False
+        
 
     def _prepare_sketch(self,n_data_rows:int, n_data_cols:int):
         """
