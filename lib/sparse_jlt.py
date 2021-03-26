@@ -7,12 +7,6 @@ from sparse_data_converter import SparseDataConverter
 from scipy import sparse
 from scipy.sparse import coo_matrix
 
-#@njit(fastmath=True)
-# def fast_countSketch(SA,row,col,data,sign,row_map):
-#     for idx in range(len(data)):
-#         SA[row_map[row[idx]],col[idx]]+=data[idx]*sign[row[idx]]
-#     return SA
-
 class SparseJLT(CountSketch):
     """
     Class wrapper for the Sparse Johnson Lindesntrauss Transform of Kane and Nelson
@@ -47,6 +41,9 @@ class SparseJLT(CountSketch):
 
 
     def sketch(self,mat,seed=100):
+        """
+        # TODO - Insert Doc string
+        """
         if not self.sparse_data_flag:
             self.get_sparse_data(mat)
         self.sketch_matrix = np.zeros((self.sketch_dim,self.n_data_cols),dtype=float)
@@ -65,7 +62,6 @@ class SparseJLT(CountSketch):
                     rmap)
             
             id_start, id_end = batch*self.sjlt_proj_dim,(batch+1)*self.sjlt_proj_dim
-            #print(f'Batch{batch},{id_start},{id_end}')
             self.sketch_matrix[id_start:id_end,:] = B
         self.sketch_matrix /= m_sqrt(self.col_sparsity)
 

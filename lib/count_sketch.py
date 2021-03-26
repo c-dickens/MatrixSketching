@@ -7,6 +7,9 @@ from scipy.sparse import coo_matrix
 
 @njit(fastmath=True)
 def fast_countSketch(SA,row,col,data,sign,row_map):
+    """
+    Numba implementation of the count sketch tranform.
+    """
     for idx in range(len(data)):
         SA[row_map[row[idx]],col[idx]]+=data[idx]*sign[row[idx]]
     return SA
