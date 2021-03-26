@@ -19,10 +19,10 @@ def data_to_test():
     To ensure the data-target test passes for the SRHT
     then length of the input should be a power of 2.
     '''
-    np.random.seed(100)
+    np.random.seed(101101)
     #X = np.random.randn(20,5)
     #X = 2*np.eye(10,20)[:,:5]
-    n,d = 1000,5
+    n,d = 5000,10
     X = np.random.randn(n,d) #/ np.random.randn(n,d)
     #X /= np.linalg.norm(X,axis=0)
     #true_norm = np.linalg.norm(X,ord='fro')**2
@@ -33,14 +33,16 @@ def test_summary_size(data_to_test):
     '''
     Tests that the summary returned has number of rows equal
     to the required projectiont dimension'''
+    print('\n')
     sketch_dim = 500
     n,d = data_to_test.shape
     true_norm = np.linalg.norm(data_to_test,ord='fro')**2
     sketches = {
-        'gauss' : GaussianSketch(sketch_dim,n,d),
-        'srht'  : SRHTSketch(sketch_dim,n,d),
-        # 'countsketch' : CountSketch(sketch_dim,n,d),
-        # 'sjltsketch' : SparseJLT(sketch_dim,n,d,col_sparsity=20)
+        'gaussian' : GaussianSketch(sketch_dim,n,d),
+        'srht_HAD'  : SRHTSketch(sketch_dim,n,d),
+        'srht_DCT'  : SRHTSketch(sketch_dim,n,d,'HAD'),
+        'countsketch' : CountSketch(sketch_dim,n,d),
+        'sjltsketch' : SparseJLT(sketch_dim,n,d,col_sparsity=20)
     }
     for sk_name, sk_method in sketches.items():
         g = sk_method
