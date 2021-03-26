@@ -13,4 +13,9 @@ Then do `git clone https://bitbucket.org/vegarant/fastwht.git' and navigate to t
 Then run `python setup.py install` followed by `python test.py` to execute the tests.
 Finally, obtain the path by running `pwd` which will print `*YOUR PATH*`and, as a hack (this bit should be improved somehow??) copy that 
 to `line 7` of `srht_sketch.py` in the `sys.path.append(*YOUR PATH*)` so that the `fastwht.py` function can 
-be read from the `hadamard.py` file of ``https://bitbucket.org/vegarant/fastwht/src/master/`.
+be read from the `hadamard.py` file of `https://bitbucket.org/vegarant/fastwht/src/master/`.
+
+Note that `https://bitbucket.org/vegarant/fastwht/src/master/` requires the `swig` software.
+If you are running anaconda python then this can easily be obtained from 
+`https://anaconda.org/anaconda/swig`.
+Alternatively, this can be obtained via homebrew.
