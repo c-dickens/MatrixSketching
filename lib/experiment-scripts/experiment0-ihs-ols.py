@@ -23,9 +23,11 @@ def main():
 
     Figure 1 https://jmlr.org/papers/volume17/14-460/14-460.pdf
     """
-    n = 1000
+    nn  = np.array([100*2**_ for _ in range(1)])
     d = 10
-    y, A, x_model = experimental_data(n,d)
+    for i,n in enumerate(nn):
+        y, A, x_model = experimental_data(n,d)
+        x_opt = np.linalg.lstsq(X,y)[0]
     print(y.shape, A.shape)
 
 if __name__ == '__main__':
