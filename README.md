@@ -6,6 +6,7 @@ Most of this code can be run using standard anaconda libraries.
 The necessary packages are stored in the virtual environment `thesis-python` which 
 can be activated by `source thesis-python/bin/activate`.
 
+*The experiments will run using the Discrete Cosine Transform, the following is optional.*
 We also use a `fastwht' library for efficient computation of the Fast Walsh Hadamard Transform.
 This can be found at `https://bitbucket.org/vegarant/fastwht/src/master/'
 Then do `git clone https://bitbucket.org/vegarant/fastwht.git' and navigate to the directory.
