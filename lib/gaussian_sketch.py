@@ -21,7 +21,7 @@ class GaussianSketch(MatrixSketch):
         S /= np.sqrt(self.sketch_dim)
         return S
 
-    def sketch(self,mat,seed=None):
+    def sketch(self,mat,seed=100):
         S = self._sample(seed)
         self.sketch_matrix = S@mat
         

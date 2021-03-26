@@ -1,4 +1,5 @@
 import numpy as np
+from math import sqrt as m_sqrt
 from numba import njit
 from matrix_sketch import MatrixSketch
 from count_sketch import CountSketch, fast_countSketch
@@ -38,7 +39,6 @@ class SparseJLT(CountSketch):
         # ! NB row map is used for indexing so MUST be an int!!!
         row_map = np.zeros((self.col_sparsity,self.n_data_rows),dtype=int)
         sign_map = np.zeros((self.col_sparsity,self.n_data_rows))
-        print(self.sjlt_proj_dim)
         for _ in range(self.col_sparsity):
             np.random.seed(seed + _)
             row_map[_,:] = np.random.choice(self.sjlt_proj_dim,self.n_data_rows,replace=True)
@@ -57,12 +57,15 @@ class SparseJLT(CountSketch):
         for batch in range(self.col_sparsity):
             rmap = rows[batch,:]
             smap = signs[batch,:]
-            B = fast_countSketch(local_summary,
+            B = fast_countSketch(np.zeros((self.sjlt_proj_dim,self.n_data_cols),dtype=float),
                     self.rows,
                     self.cols,
                     self.vals,
                     smap,
                     rmap)
-            self.sketch_matrix[batch*self.sjlt_proj_dim:(batch+1)*self.sjlt_proj_dim,:] = B
-        self.sketch_matrix *= 1 / np.sqrt(self.col_sparsity)
+            
+            id_start, id_end = batch*self.sjlt_proj_dim,(batch+1)*self.sjlt_proj_dim
+            #print(f'Batch{batch},{id_start},{id_end}')
+            self.sketch_matrix[id_start:id_end,:] = B
+        self.sketch_matrix /= m_sqrt(self.col_sparsity)
 
