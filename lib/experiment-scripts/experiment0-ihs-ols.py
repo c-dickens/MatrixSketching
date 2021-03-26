@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+from experiment_utils import prediction_error
 
 def experimental_data(n,d, sigma=1.0,seed=100):
     """
@@ -13,7 +15,7 @@ def experimental_data(n,d, sigma=1.0,seed=100):
     A = np.random.randn(n,d)
     x_model = np.random.randn(d,1)
     x_model /= np.linalg.norm(x_model,axis=0)
-    w = np.random.multivariate_normal(mean=np.zeros((n,)),cov=sigma**2*np.eye(n),size=(n,))
+    w = sigma**2*np.random.randn(n,1)
     y = A@x_model + w
     return y,A,x_model
 
@@ -23,12 +25,25 @@ def main():
 
     Figure 1 https://jmlr.org/papers/volume17/14-460/14-460.pdf
     """
-    nn  = np.array([100*2**_ for _ in range(1)])
+    # * Experimental setup 
+    nn  = np.array([100*2**_ for _ in range(5)])
     d = 10
-    for i,n in enumerate(nn):
-        y, A, x_model = experimental_data(n,d)
-        x_opt = np.linalg.lstsq(X,y)[0]
-    print(y.shape, A.shape)
+    num_trials = 2
 
+    # * Results setup 
+    results_df = pd.DataFrame()
+    results_df['Rows'] = nn
+    opt_results = np.zeros_like(nn,dtype=float)
+
+    for i,n in enumerate(nn):
+        for t in range(num_trials):
+            y, A, x_model = experimental_data(n,d,seed=t)
+            x_opt = np.linalg.lstsq(A,y)[0]
+            error = prediction_error(A,x_model,x_opt)
+            opt_results[i] += error
+        opt_results[i] /= num_trials
+    results_df['Optimal'] = opt_results
+    print(results_df)
+    print(opt_results)
 if __name__ == '__main__':
     main()
