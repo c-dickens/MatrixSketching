@@ -2,9 +2,10 @@
 
 
 ## Dependencies
-Most of this code can be run using standard anaconda libraries.
+~Most of this code can be run using standard anaconda libraries.
 The necessary packages are stored in the virtual environment `thesis-python` which 
-can be activated by `source thesis-python/bin/activate`.
+can be activated by `source thesis-python/bin/activate`.~
+Just do `workon sketching`.
 
 *The experiments will run using the Discrete Cosine Transform, the following is optional.*
 We also use a `fastwht' library for efficient computation of the Fast Walsh Hadamard Transform.
