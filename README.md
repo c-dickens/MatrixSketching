@@ -15,6 +15,8 @@ Then run `python setup.py install` followed by `python test.py` to execute the t
 Finally, obtain the path by running `pwd` which will print `*YOUR PATH*`and, as a hack (this bit should be improved somehow??) copy that 
 to `line 7` of `srht_sketch.py` in the `sys.path.append(*YOUR PATH*)` so that the `fastwht.py` function can 
 be read from the `hadamard.py` file of `https://bitbucket.org/vegarant/fastwht/src/master/`.
+This can be avoided by adding the directory to the venv by `add2virtualenv .` if you have used `mkvirtualenv myenv
+workon myenv` see `https://stackoverflow.com/questions/4757178/how-do-you-set-your-pythonpath-in-an-already-created-virtualenv/47184788#47184788`
 
 Note that `https://bitbucket.org/vegarant/fastwht/src/master/` requires the `swig` software.
 If you are running anaconda python then this can easily be obtained from 
