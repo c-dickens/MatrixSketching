@@ -38,7 +38,7 @@ class SRHTSketch(MatrixSketch):
         Given int x find next largest power of 2.
         If x is a power of 2 then x is returned 
         '''
-        return 1<<(x-1).bit_length()
+        return 1<<int(x-1).bit_length()
 
     def _hadamard_transform(self,mat):
         """
