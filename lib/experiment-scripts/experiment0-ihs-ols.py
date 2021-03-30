@@ -2,9 +2,12 @@ import sys
 sys.path.append('../')
 import numpy as np
 import pandas as pd
+from sparse_data_converter import SparseDataConverter
+from scipy import sparse
+from scipy.sparse import coo_matrix
 from classical_sketch import ClassicalSketch
 
-from experiment_utils import prediction_error
+from experiment_utils import prediction_error, vec_error
 
 def experimental_data(n,d, sigma=1.0,seed=100):
     """
@@ -42,21 +45,30 @@ def main():
 
     for i,n in enumerate(nn):
         for t in range(num_trials):
+            # * 0. Data setup and sparsification
             y, A, x_model = experimental_data(n,d,seed=t)
+            sparse_data = SparseDataConverter(np.c_[A,y]).coo_data
+            
 
-            # * Optimal weights
-            x_opt = np.linalg.lstsq(A,y)[0]
-            error = prediction_error(A,x_model,x_opt)
+            # * 1. Optimal weights
+            x_opt = np.linalg.lstsq(A,y,rcond=None)[0]
+            error =  prediction_error(A,x_model,x_opt) # vec_error(x_model,x_opt) #
             opt_results[i] += error
 
-            # * Sketched weights
-            # Sketch parameters taken from IHS paper
-            classical_sk_dim = 1 + np.int(np.ceil(np.log(n)))
-            classical_sk_dim *= 5*d
-            classical_sk_solver = ClassicalSketch(n,d,classical_sk_dim,'SRHT')
+            # * 2. Sketched weights
+            # 2 Sketch parameters taken from IHS paper
+
+            # * 2a Classical
+            classical_sk_dim = 1 + int(np.ceil(np.log(n)))
+            classical_sk_dim *= 7*d
+            classical_sk_solver = ClassicalSketch(n,d,classical_sk_dim,'SJLT', sparse_data)
             x_sk = classical_sk_solver.fit(A,y,seed=t)
-            classical_error = prediction_error(A,x_model,x_sk)
+            classical_error =  prediction_error(A,x_model,x_sk) # vec_error(x_model,x_sk) #
             classical_results[i] += classical_error
+
+            # * 2b IHS
+
+
         opt_results[i] /= num_trials
         classical_results[i] /= num_trials
     results_df['Optimal'] = opt_results

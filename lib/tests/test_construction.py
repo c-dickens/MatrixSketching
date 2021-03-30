@@ -39,10 +39,10 @@ def test_summary_size(data_to_test):
     true_norm = np.linalg.norm(data_to_test,ord='fro')**2
     sketches = {
         'gaussian' : GaussianSketch(sketch_dim,n,d),
-        'srht_HAD'  : SRHTSketch(sketch_dim,n,d),
-        'srht_DCT'  : SRHTSketch(sketch_dim,n,d,'HAD'),
+        'srht_HAD'  : SRHTSketch(sketch_dim,n,d,'HAD'),
+        'srht_DCT'  : SRHTSketch(sketch_dim,n,d),
         'countsketch' : CountSketch(sketch_dim,n,d),
-        'sjltsketch' : SparseJLT(sketch_dim,n,d,col_sparsity=20)
+        'sjltsketch' : SparseJLT(sketch_dim,n,d,col_sparsity=5)
     }
     for sk_name, sk_method in sketches.items():
         g = sk_method

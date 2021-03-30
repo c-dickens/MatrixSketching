@@ -1,13 +1,15 @@
 import numpy as np 
-from gaussian_sketch import GaussianSketch 
+from gaussian_sketch import GaussianSketch
+from count_sketch import CountSketch
+from sparse_jlt import SparseJLT
 from srht_sketch import SRHTSketch
 
 
 class ClassicalSketch:
     """
     """
-    def __init__(self, n_data_rows:int, n_data_cols:int,\
-                sk_dim:int,sk_mode='Gaussian'):
+    def __init__(self,n_data_rows:int, n_data_cols:int,\
+                sk_dim:int,sk_mode='Gaussian',sparse_data=None):
         """
         Approximate OLS regression using random projections
         Parameters:
@@ -23,7 +25,25 @@ class ClassicalSketch:
             self.sketcher = GaussianSketch(self.sk_dim,self.n_data_rows,self.n_data_cols)
         elif self.sk_mode == 'SRHT':
             # Add 1 to the number of data columns as we append a column for y later on
-            self.sketcher = SRHTSketch(self.sk_dim,self.n_data_rows,self.n_data_cols+1,'HAD')
+            try: 
+                self.sketcher = SRHTSketch(self.sk_dim,self.n_data_rows,self.n_data_cols+1,'HAD')
+            except:
+                self.sketcher = SRHTSketch(self.sk_dim,self.n_data_rows,self.n_data_cols+1,'DCT')
+        elif self.sk_mode == 'SJLT':
+            self.sketcher = SparseJLT(self.sk_dim,self.n_data_rows,self.n_data_cols,col_sparsity=5)
+        elif self.sk_mode == 'CountSketch':
+            self.sketcher = CountSketch(self.sk_dim,self.n_data_rows,self.n_data_cols)
+        
+        if (sparse_data is not None) and (self.sk_mode == 'SJLT' or self.sk_mode == 'CountSketch'):
+            self.sketcher.set_sparse_data(sparse_data)
+            print('The sparse data has been set')
+            print(len(self.sketcher.rows))
+
+    def _sketch(self,seed):
+        pass
+    
+    def _solve(self):
+        pass
 
     def fit(self,X,y,seed=100):
         """
@@ -35,7 +55,7 @@ class ClassicalSketch:
         self.sketcher.sketch(Xy,seed)
         _sketch = self.sketcher.get()
         SX, Sy = _sketch[:,:-1], _sketch[:,-1]
-        x = np.linalg.lstsq(SX, Sy)[0]
+        x = np.linalg.lstsq(SX, Sy,rcond=None)[0]
         return x
 
 
