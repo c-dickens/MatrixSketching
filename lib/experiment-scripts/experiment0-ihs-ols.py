@@ -6,8 +6,7 @@ from sparse_data_converter import SparseDataConverter
 from scipy import sparse
 from scipy.sparse import coo_matrix
 from classical_sketch import ClassicalSketch
-
-from experiment_utils import prediction_error, vec_error
+from experiment_utils import svd_solve, prediction_error
 
 def experimental_data(n,d, sigma=1.0,seed=100):
     """
@@ -25,6 +24,7 @@ def experimental_data(n,d, sigma=1.0,seed=100):
     w = sigma**2*np.random.randn(n,1)
     y = A@x_model + w
     return y,A,x_model
+
 
 def main():
     """
@@ -50,23 +50,25 @@ def main():
             sparse_data = SparseDataConverter(np.c_[A,y]).coo_data
             
 
-            # * 1. Optimal weights
-            x_opt = np.linalg.lstsq(A,y,rcond=None)[0]
+            # * 1. Optimal weights use SVD instead of x_opt = np.linalg.lstsq(A,y,rcond=None)[0]
+            x_opt = svd_solve(A,y)
+            assert x_opt.shape == x_model.shape
             error =  prediction_error(A,x_model,x_opt) # vec_error(x_model,x_opt) #
             opt_results[i] += error
 
-            # * 2. Sketched weights
-            # 2 Sketch parameters taken from IHS paper
+            #  * 2. Sketched weights
+            #  2 Sketch parameters taken from IHS paper
 
-            # * 2a Classical
+            #  * 2a Classical
             classical_sk_dim = 1 + int(np.ceil(np.log(n)))
             classical_sk_dim *= 7*d
             classical_sk_solver = ClassicalSketch(n,d,classical_sk_dim,'SJLT', sparse_data)
             x_sk = classical_sk_solver.fit(A,y,seed=t)
+            assert x_opt.shape == x_sk.shape
             classical_error =  prediction_error(A,x_model,x_sk) # vec_error(x_model,x_sk) #
             classical_results[i] += classical_error
-
-            # * 2b IHS
+            
+            # # * 2b IHS
 
 
         opt_results[i] /= num_trials
@@ -74,6 +76,6 @@ def main():
     results_df['Optimal'] = opt_results
     results_df['Classical'] = classical_results
     print(results_df)
-    print(opt_results)
+    
 if __name__ == '__main__':
     main()

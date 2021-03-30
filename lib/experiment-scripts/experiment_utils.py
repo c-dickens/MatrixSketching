@@ -3,6 +3,17 @@ A collection of useful functions for the experiments
 """
 import numpy as np
 
+def svd_solve(a,b):
+    u,sig,vt = np.linalg.svd(a,full_matrices=False)
+    v = vt.T
+    sig = sig[:,np.newaxis]
+    sig_inv = 1./sig
+    x_opt = (v@(sig_inv*u.T))@b
+    # ! Beware of multindexed arrays which can affect error comparison
+    # ! x_opt = x_opt[:,0]
+    return x_opt
+
+
 def vec_error(vec1,vec2):
     """
     Returns ||vec1 - vec2||_2
