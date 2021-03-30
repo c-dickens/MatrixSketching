@@ -9,7 +9,7 @@ class ClassicalSketch:
     """
     """
     def __init__(self,n_data_rows:int, n_data_cols:int,\
-                sk_dim:int,sk_mode='Gaussian',sparse_data=None):
+                sk_dim:int,sk_mode='Gaussian',sparse_data=None,sjlt_sparsity=5):
         """
         Approximate OLS regression using random projections
         Parameters:
@@ -30,10 +30,11 @@ class ClassicalSketch:
             except:
                 self.sketcher = SRHTSketch(self.sk_dim,self.n_data_rows,self.n_data_cols+1,'DCT')
         elif self.sk_mode == 'SJLT':
-            self.sketcher = SparseJLT(self.sk_dim,self.n_data_rows,self.n_data_cols+1,col_sparsity=5)
+            self.sketcher = SparseJLT(self.sk_dim,self.n_data_rows,self.n_data_cols+1,col_sparsity=sjlt_sparsity)
         elif self.sk_mode == 'CountSketch':
             self.sketcher = CountSketch(self.sk_dim,self.n_data_rows,self.n_data_cols+1)
         
+        self.sparse_data_is_set = False # Init for dense sketches to False
         if (sparse_data is not None) and (self.sk_mode == 'SJLT' or self.sk_mode == 'CountSketch'):
             self.sketcher.set_sparse_data(sparse_data)
             self.sparse_data_is_set = True
