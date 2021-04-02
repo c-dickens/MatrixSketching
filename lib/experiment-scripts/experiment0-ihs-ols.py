@@ -7,24 +7,9 @@ from scipy import sparse
 from scipy.sparse import coo_matrix
 from classical_sketch import ClassicalSketch
 from iterative_hessian_sketch import IterativeHessianOLS
-from experiment_utils import svd_solve, prediction_error, vec_error
+from experiment_utils import experimental_data,svd_solve, prediction_error, vec_error
 
-def experimental_data(n,d, sigma=1.0,seed=100):
-    """
-    The data for this experiment is taken from 3.1 https://jmlr.org/papers/volume17/14-460/14-460.pdf
-    A       : n \times d matrix of N(0,1) entries
-    x_model : d \times 1 vector chosen uniformly from the d dimensional sphere by choosing 
-              random normals and then normalising.
-    w       : Vector of noise perturbation which is N(0,sigma**2*I_n)
-    y = A@x_model + w
-    """
-    np.random.seed(seed)
-    A = np.random.randn(n,d)
-    x_model = np.random.randn(d,1)
-    x_model /= np.linalg.norm(x_model,axis=0)
-    w = sigma**2*np.random.randn(n,1)
-    y = A@x_model + w
-    return y,A,x_model
+
 
 
 def main():
@@ -32,8 +17,11 @@ def main():
     Task: IHS-OLS with random projections, specifically, the CountSketch
 
     Figure 1 https://jmlr.org/papers/volume17/14-460/14-460.pdf
+
+    Evaluates the error to the model weights.
     """
     # * Experimental setup 
+    file_path = 'results/experiment0-ihs-ols.csv'
     nn  = np.array([100*2**_ for _ in range(14)])
     d = 10
     num_trials = 1
@@ -87,6 +75,7 @@ def main():
     results_df['Classical'] = classical_results
     results_df['IHS'] = ihs_results
     print(results_df)
+    results_df.to_csv(path_or_buf=file_path,index=False)
     
 if __name__ == '__main__':
     main()
