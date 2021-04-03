@@ -15,6 +15,27 @@ class SparseJLT(CountSketch):
     1. Generate `s` independent countsketches each of size m/s x n and concatenate them.
     2. Use initial hash functions as decided above in the class definition and then generate new hashes for
     subsequent countsketch calls.
+
+
+    Note that this functionality can be tensorised easily, but for ease of interface with 
+    iterative sketching, I choose not to do this.
+    Replace the _sample_hashes function with simply
+    row_map = np.random.randint(low=0,high=self.sjlt_proj_dim,size=(self.col_sparsity,self.n_data_rows))
+    sign_map = np.random.choice([-1., 1.],size=(self.col_sparsity,self.n_data_rows))
+
+    and then the main sketch function should be:
+    self.sketch_matrix = np.zeros((self.sketch_dim,self.n_data_cols),dtype=float)
+    rows,signs = self._sample_hashes(seed)
+    for face in range(self.col_sparsity):
+        rmap = rows[face,:]
+        smap = signs[face,:]
+        self.all_sketches[face,:,:] = fast_countSketch(np.zeros((self.sjlt_proj_dim,self.n_data_cols),dtype=float),
+                self.rows,
+                self.cols,
+                self.vals,
+                smap,
+                rmap)
+    self.sketch_matrix = np.concatenate(self.all_sketches,axis=0)
     """
     def __init__(self,sketch_dim:int, n_data_rows:int, \
         n_data_cols:int,col_sparsity:int):
