@@ -53,11 +53,6 @@ class IterativeHessianOLS:
         XTy = (X.T@y).reshape(-1,1)
         return current_weights, weights_hist, XTy
 
-    def _sketch_data(self,X,seed=100):
-        if self.sparse_data_is_set:
-            self.sketcher.sketch(seed)
-        else:
-            self.sketcher.sketch(X,seed)
 
     def _grad(self, X, vec, XTy):
         """
@@ -72,11 +67,18 @@ class IterativeHessianOLS:
         current_x, all_x, XTy = self._init_iterations(X,y,iterations)
 
         for it in range(iterations):
+            #######################################################
             # 1. Generate a sketch and obtain the svd factors for efficient solving.
-            self._sketch_data(X,seed=1000*it)
+            self.sketcher.sketch(X,seed=1000*it)
             u,sig,vt = self.sketcher.get(in_svd=True)
             sig = sig[:,np.newaxis]
             sig_inv = 1./sig
+            gradient = self._grad(X, current_x, XTy)
+            update = - vt.T@ (sig_inv**2 * (vt @ gradient)) # This solves lineat system H update = - gradient
+            current_x += update
+            #current_x += update
+            all_x[:,it] = current_x[:,0]
+            #######################################################
             # print(u.shape, sig.shape,vt.shape)
             # SA = self.sketcher.get(in_svd=False)
             # H = SA.T @ SA
@@ -91,16 +93,12 @@ class IterativeHessianOLS:
             # print('Term shape: ', (sig_inv**2 * (vt @ right_hand_side)).shape)
             # update =  - vt.T@(sig_inv**2 * (vt @ right_hand_side))
             
-            
+            #print(H.shape, self._grad(X, current_x, XTy).shape)
             # current_x = current_x - H_inv @ self._grad(X, current_x, XTy) # ! This works
-            #current_x = current_x - vt.T@ (sig_inv**2 * (vt @ self._grad(X, current_x, XTy)))  # ! This works
+            # current_x = current_x - vt.T@ (sig_inv**2 * (vt @ self._grad(X, current_x, XTy)))  # ! This works
             # update = - vt.T@ (sig_inv**2 * (vt @ self._grad(X, current_x, XTy)))
-            #  current_x += update # ! This works
-            gradient = self._grad(X, current_x, XTy)
-            update = - vt.T@ (sig_inv**2 * (vt @ gradient)) # This solves lineat system H update = - gradient
-            current_x += update
-            #current_x += update
-            all_x[:,it] = current_x[:,0]
+            # current_x += update # ! This works
+            # all_x[:,it] = current_x[:,0]
         return current_x, all_x
         
 
