@@ -73,7 +73,7 @@ class IterativeHessianOLS:
 
         for it in range(iterations):
             # 1. Generate a sketch and obtain the svd factors for efficient solving.
-            self._sketch_data(X,seed=100*it)
+            self._sketch_data(X,seed=1000*it)
             u,sig,vt = self.sketcher.get(in_svd=True)
             sig = sig[:,np.newaxis]
             sig_inv = 1./sig

@@ -3,6 +3,11 @@ A collection of useful functions for the experiments
 """
 import numpy as np
 
+
+# * Common sketching paradigms
+models = ['IHS', 'Classical']
+methods = ['CountSketch', 'SRHT', 'SJLT', 'Gaussian']
+
 def experimental_data(n,d, sigma=1.0,seed=100):
     """
     The data for this experiment is taken from 3.1 https://jmlr.org/papers/volume17/14-460/14-460.pdf
@@ -16,7 +21,8 @@ def experimental_data(n,d, sigma=1.0,seed=100):
     A = np.random.randn(n,d)
     x_model = np.random.randn(d,1)
     x_model /= np.linalg.norm(x_model,axis=0)
-    w = sigma**2*np.random.randn(n,1)
+    w = np.random.normal(loc=0.0,scale=sigma,size=(n,1))
+    #w = sigma**2*np.random.randn(n,1)
     y = A@x_model + w
     return y,A,x_model
 
