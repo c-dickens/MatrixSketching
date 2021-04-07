@@ -14,7 +14,7 @@ from experiment_utils import models, methods, experimental_data,svd_solve, predi
 
 
 
-def main():
+def main(n,d,i,t):
     """
     Task: IHS-OLS with random projections, specifically, the CountSketch
     but with wall clock time to understand how the sketches fare in terms 
@@ -25,23 +25,25 @@ def main():
 
     Evaluates the error as a function of the iterations with respect 
     to the optimal weights.
+
+    We use a default train/test split of 0.9 train and 0.1 test
     """
     # * Experimental setup      
     # *  2 Sketch parameters taken from IHS paper
     file_path = 'results/experiment2-ihs-iterations-time.csv' 
-    n = 6000
-    n_train, n_test = 5000, 1000
-    d = 200
-    num_trials = 5
-    num_iters = 10
+    #n = 6000
+    #d = 200
+    n_train = int(0.9*n)
+    n_test = n - n_train
+    num_iters = i
+    num_trials = t
     ihs_sketch_dims = [5*d]
     
     # * Results setup 
     metrics = ['Sketch','SVD','Solve','Coefficient Error', 'Test Error']
     methods_and_exact = ['Exact(SVD)'] + methods
-    all_setups = list(itertools.product(methods, ihs_sketch_dims)) #list(itertools.product(methods, ihs_sketch_dims))
+    all_setups = list(itertools.product(methods, ihs_sketch_dims)) 
     df = pd.DataFrame(np.zeros((num_iters,len(methods_and_exact)*len(metrics))))
-    #df.columns = pd.MultiIndex.from_product([['Exact(SVD)','CountSketch','SRHT'],['Sketch','SVD','Solve','Error']])
     df.columns = pd.MultiIndex.from_product([methods_and_exact,metrics])
     ihs_results_opt = {mg: np.zeros(num_iters,dtype=float) for mg in all_setups}
 
@@ -52,7 +54,7 @@ def main():
         A_train, A_test = A[:n_train,:], A[n_train:,:]
         y_train, y_test = y[:n_train,:], y[n_train:,:]
 
-        sparse_data = sparse.coo_matrix(A_train) #SparseDataConverter(A).coo_data
+        sparse_data = sparse.coo_matrix(A_train) 
         SVD_TIMER = timer()
         x_opt = svd_solve(A_train,y_train)
         svd_time = timer() - SVD_TIMER 
@@ -68,7 +70,7 @@ def main():
             ctsk_setup = c_ihs_solver.fit(A_train,y_train,num_iters,timing=True)
             sjlt_setup = s_ihs_solver.fit(A_train,y_train,num_iters,timing=True)
 
-        # # * 2b IHS
+        # * 2b IHS
         for sk_method_gamma_d in all_setups:
             sk_method, ihs_sk_dim = sk_method_gamma_d[0], sk_method_gamma_d[1]
             ihs_solver = IterativeHessianOLS(n_train,d,ihs_sk_dim,sk_method,sparse_data=sparse_data)
@@ -85,18 +87,21 @@ def main():
                 df[sk_method,'Solve'][iter_round]  += ihs_total_time['Solve'][iter_round]
 
             _total_time = ihs_total_time['Total']
-            print(f'IHS:{sk_method} Time: { _total_time:.4f}')
+            #print(f'IHS:{sk_method} Time: { _total_time:.4f}')
     df /= num_trials
-    print(df)
-    # # # opt_df['Classical'] = classical_results_opt
-    # for sk_method_gamma_d in all_setups:
-    #     sk_method, ihs_sk_dim = sk_method_gamma_d[0], sk_method_gamma_d[1]
-    #     gamma = int(ihs_sk_dim/d)
-    #     column_name = sk_method + str(gamma)
-    #     print('Sketch method: ',sk_method)
-    #     opt_df[column_name] = ihs_results_opt[sk_method_gamma_d] / num_trials
-    # print(opt_df[:num_iters])
     df.to_csv(path_or_buf=file_path,index=False)
     
 if __name__ == '__main__':
-    main()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-n', type=int, default=6000, 
+        help='''Number of rows in the dataset.''')
+    parser.add_argument('-d', type=int, default=200, 
+        help='''Number of trials to repeat the experiment.''')
+    parser.add_argument('-i', type=int, default=1, 
+        help='''Number of iterations for each IHS.''')
+    parser.add_argument('-t', type=int, default=1, 
+        help='''Number of trials to repeat the experiment.''')
+    
+    args = parser.parse_args()
+    main(**vars(args))
