@@ -1,8 +1,10 @@
 import numpy as np 
+from timeit import default_timer as timer
 from gaussian_sketch import GaussianSketch
 from count_sketch import CountSketch
 from sparse_jlt import SparseJLT
 from srht_sketch import SRHTSketch
+
 
 class IterativeHessianOLS:
     """
@@ -63,9 +65,10 @@ class IterativeHessianOLS:
         """
         return X.T@(X@vec) - XTy
 
-    def _iterate_multiple(self,X,y,iterations=10):
+    def _iterate_multiple(self,X,y,iterations=10,timing=False):
+        if timing:
+            return self._iterate_multiple_timing(X,y,iterations)
         current_x, all_x, XTy = self._init_iterations(X,y,iterations)
-
         for it in range(iterations):
             #######################################################
             # 1. Generate a sketch and obtain the svd factors for efficient solving.
@@ -76,7 +79,6 @@ class IterativeHessianOLS:
             gradient = self._grad(X, current_x, XTy)
             update = - vt.T@ (sig_inv**2 * (vt @ gradient)) # This solves lineat system H update = - gradient
             current_x += update
-            #current_x += update
             all_x[:,it] = current_x[:,0]
             #######################################################
             # print(u.shape, sig.shape,vt.shape)
@@ -100,10 +102,49 @@ class IterativeHessianOLS:
             # current_x += update # ! This works
             # all_x[:,it] = current_x[:,0]
         return current_x, all_x
-        
 
-    def fit(self,X,y,iterations=10):
+    def _iterate_multiple_timing(self,X,y,iterations=10):
+        """
+        Performs the iterations but also records the timing of each individual part.
+        """
+        times = {
+        'Total'    : 0.,
+        'Sketch'   : np.zeros(iterations,dtype=float),
+        'SVD'      : np.zeros(iterations,dtype=float),
+        'Solve'    : np.zeros(iterations,dtype=float)
+        }
+        TIMER_START = timer()
+        current_x, all_x, XTy = self._init_iterations(X,y,iterations)
+        for it in range(iterations):
+            #######################################################
+            # 1. Generate a sketch and obtain the svd factors for efficient solving.
+            SKETCH_TIMER = timer()
+            self.sketcher.sketch(X,seed=1000*it)
+            times['Sketch'][it] = timer() - SKETCH_TIMER
+
+            SVD_TIMER = timer()
+            u,sig,vt = self.sketcher.get(in_svd=True)
+            times['SVD'][it] = timer() - SVD_TIMER
+            sig = sig[:,np.newaxis]
+            sig_inv = 1./sig
+
+            SOLVE_TIME = timer()
+            gradient = self._grad(X, current_x, XTy)
+            update = - vt.T@ (sig_inv**2 * (vt @ gradient)) # This solves lineat system H update = - gradient
+            current_x += update
+            times['Solve'][it] = timer() - SOLVE_TIME
+            all_x[:,it] = current_x[:,0]
+            #######################################################
+        times['Total']= timer() - TIMER_START
+        return current_x, all_x,times
+
+    def fit(self,X,y,iterations=10,timing=False):
+        """
+        Fits the model without any timing on data X and targets y
+        """
         if self.ihs_mode == 'multi':
+            if timing:
+                return self._iterate_multiple(X,y,iterations,timing=True)
             x, all_x  = self._iterate_multiple(X,y,iterations)
         return x, all_x
 

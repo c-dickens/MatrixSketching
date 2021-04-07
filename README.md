@@ -22,3 +22,11 @@ Note that `https://bitbucket.org/vegarant/fastwht/src/master/` requires the `swi
 If you are running anaconda python then this can easily be obtained from 
 `https://anaconda.org/anaconda/swig`.
 Alternatively, this can be obtained via homebrew.
+
+## Experiments
+We provide the following experimentst that are all located in the `lib/experiment-scripts/` directory.
+
+_IHS & CountSketch:Synthetic Data_
+1. `experiment0-ihs-ols.py` examines the performance of random projections in the ihs vs classical setting.  
+2. `experiment1-error-opt-model.py` examines how the ihs model fares under varying the sketches and sketch sizes
+3. `experiment2-ihs-timings.py` runs the same experiment as in 2 but also obtains wall-clock times and test error performance.

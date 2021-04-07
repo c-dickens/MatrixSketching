@@ -49,3 +49,10 @@ def prediction_error(mat,vec1,vec2):
     1/sqrt(n) * ||mat(vec1 - vec2)||_2
     """
     return 1./(np.sqrt(mat.shape[0]))*np.linalg.norm(mat@(vec1 - vec2),ord=2)
+
+def test_mse(test_mat,weights,test_targets):
+    """
+    Returns the testing error 1/n_test * ||y_test - test_mat * weights||^2
+    for a given set of weights
+    """
+    return 1./len(test_mat) * np.linalg.norm(test_targets - test_mat @ weights)**2

@@ -24,9 +24,9 @@ def main():
     """
     # * Experimental setup 
     file_path = 'results/experiment0-ihs-ols.csv'
-    nn  = np.array([100*2**_ for _ in range(11)])
+    nn  = np.array([100*2**_ for _ in  range(6)])# range(11)])
     d = 10
-    num_trials = 10
+    num_trials = 1
 
     total_runs = len(nn)*num_trials*len(models)*len(methods) # For progress bar
     runs_complete = 0
@@ -69,7 +69,7 @@ def main():
                 if sk_model == 'Classical':
                     #  * 2a Classical
                     classical_sk_dim = num_iters*ihs_sk_dim # Scale up so same number of projections used.
-                    classical_sk_solver = ClassicalSketch(n,d,classical_sk_dim,sk_method, sparse_data)
+                    classical_sk_solver = ClassicalSketch(n,d,classical_sk_dim,sk_method, sparse_data=sparse_data)
                     x_sk = classical_sk_solver.fit(A,y,seed=t)
                     assert x_opt.shape == x_sk.shape
                     classical_errors[sk_method][i] += prediction_error(A,x_model,x_sk)
