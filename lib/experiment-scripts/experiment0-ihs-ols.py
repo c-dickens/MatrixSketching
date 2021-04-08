@@ -20,7 +20,7 @@ def main(trials):
     """
     # * Experimental setup 
     file_path = 'results/experiment0-ihs-ols.csv'
-    nn  = np.array([100*2**_ for _ in  range(6)])# range(11)])
+    nn  = np.array([100*2**_ for _ in range(11)])
     d = 10
     num_trials = trials
 
