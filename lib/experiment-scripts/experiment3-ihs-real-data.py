@@ -31,7 +31,8 @@ def main(n,d,i,t):
     # * Experimental setup      
     # *  2 Sketch parameters taken from IHS paper
     cwd = os.getcwd()
-    data_path = '../../datasets/covertype.npz'
+    data_name = 'covertype'
+    data_path = '../../datasets/' + data_name + '.npz'
     dat = np.load(data_path)
     # print(dat)
     # for k in dat.keys():
@@ -54,7 +55,7 @@ def main(n,d,i,t):
     
     
     # * Results setup 
-    file_path = 'results/experiment4-ihs-real-data.csv' 
+    file_path = 'results/experiment4-' + data_name + '.csv' 
     metrics = ['Sketch','SVD','Solve','Coefficient Error', 'Test Error']
     methods_and_exact = ['Exact(SVD)'] + methods
     all_setups = list(itertools.product(methods, ihs_sketch_dims)) 
@@ -117,7 +118,7 @@ def main(n,d,i,t):
             #print(f'IHS:{sk_method} Time: { _total_time:.4f}')
     df /= num_trials
     print(df)
-    # df.to_csv(path_or_buf=file_path,index=False)
+    df.to_csv(path_or_buf=file_path,index=False)
     
 if __name__ == '__main__':
     import argparse
