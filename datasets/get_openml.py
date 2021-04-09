@@ -5,11 +5,19 @@ import scipy.sparse as sparse
 from sklearn.preprocessing import Normalizer
 
 all_datasets = {
-    "covertype" : {
-    "url" : 'https://www.openml.org/d/293',
-    "outputFileName" : 'covertype',
+    # "covertype" : {
+    # "url" : 'https://www.openml.org/d/293',
+    # "outputFileName" : 'covertype',
+    # 'input_destination' : 'OPENML',
+    # 'openml_id' : 293,
+    # 'sparse_format' : True
+    # },
+
+    "aloi" : {
+    "url" : 'https://www.openml.org/d/1592',
+    "outputFileName" : 'aloi',
     'input_destination' : 'OPENML',
-    'openml_id' : 293,
+    'openml_id' : 1592,
     'sparse_format' : True
     },
 }
@@ -28,9 +36,11 @@ def get_openml_data(dataset):
     # target=dataset.default_target_attribute
     # )
     # print(type(X),X.shape)
+    print(f'Getting DATA: ',dataset)
     dat = fetch_openml(data_id=_id)
     X = dat['data']
     y = dat['target'].astype('float')
+    print(type(X))
 
     if isinstance(X,sparse.csr_matrix):
         nnz = X.count_nonzero()
@@ -59,18 +69,14 @@ def main():
     '''
     Download data from all_datasets
     '''
-
-
-
     for dataset in all_datasets:
         print(dataset)
         out_file = all_datasets[dataset]['outputFileName']
         file_url = all_datasets[dataset]['url']
-
+        get_openml_data(dataset)
         # if the .npy version doesn't exist then make one
-
-        if not (os.path.isfile(out_file + '.npy') or os.path.isfile(out_file + '.npz')):    
-            get_openml_data(dataset)
+        # if not (os.path.isfile(out_file + '.npy') or os.path.isfile(out_file + '.npz')):    
+        #     get_openml_data(dataset)
 
 if __name__ == '__main__':
     main()

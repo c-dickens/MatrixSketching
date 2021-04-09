@@ -29,12 +29,32 @@ def experimental_data(n,d, sigma=1.0,seed=100):
 def svd_solve(a,b):
     u,sig,vt = np.linalg.svd(a,full_matrices=False)
     v = vt.T
+    #safe_sig = sig[sig > 1E-8]
+    #d_safe = len(safe_sig)
+    #u = u[:,:d_safe]
+    #v = v[:,:d_safe]
     sig = sig[:,np.newaxis]
+    #sig = safe_sig[:,np.newaxis]
+    #print(sig)
     sig_inv = 1./sig
     x_opt = (v@(sig_inv*u.T))@b
     # ! Beware of multindexed arrays which can affect error comparison
     # ! x_opt = x_opt[:,0]
     return x_opt
+
+def sparsify_data(mat, sparsity=0.2,seed=100):
+    """
+    Randomly zeroes out some coordinates of the input matrix mat
+    Only operates on numpy arrays.
+    """
+    np.random.seed(seed)
+    n,d = mat.shape
+    mat_sparse = np.zeros_like(mat,dtype=mat.dtype)
+    num_nnzs = int(sparsity*n*d)
+    nnz_row_locs = np.random.choice(n,size=(num_nnzs,),replace=True)
+    nnz_col_locs = np.random.choice(d,size=(num_nnzs,),replace=True)
+    mat_sparse[nnz_row_locs, nnz_col_locs] = mat[nnz_row_locs, nnz_col_locs]
+    return mat_sparse
 
 
 def vec_error(vec1,vec2):

@@ -80,27 +80,6 @@ class IterativeHessianOLS:
             update = - vt.T@ (sig_inv**2 * (vt @ gradient)) # This solves lineat system H update = - gradient
             current_x += update
             all_x[:,it] = current_x[:,0]
-            #######################################################
-            # print(u.shape, sig.shape,vt.shape)
-            # SA = self.sketcher.get(in_svd=False)
-            # H = SA.T @ SA
-            # H_inv = np.linalg.pinv(H)
-
-            # 2. Solve linear system wrt negative gradient
-            # Equivalent to Hessian @ new weights = - gradient f(old weights)
-            # right_hand_side = - self._grad(X, current_x, XTy)
-            # print('Grad shape: ', right_hand_side.shape)
-            # #update = (vt.T@(sig_inv*u.T))@right_hand_side
-            # print('Basis shape: ', (vt @ right_hand_side).shape)
-            # print('Term shape: ', (sig_inv**2 * (vt @ right_hand_side)).shape)
-            # update =  - vt.T@(sig_inv**2 * (vt @ right_hand_side))
-            
-            #print(H.shape, self._grad(X, current_x, XTy).shape)
-            # current_x = current_x - H_inv @ self._grad(X, current_x, XTy) # ! This works
-            # current_x = current_x - vt.T@ (sig_inv**2 * (vt @ self._grad(X, current_x, XTy)))  # ! This works
-            # update = - vt.T@ (sig_inv**2 * (vt @ self._grad(X, current_x, XTy)))
-            # current_x += update # ! This works
-            # all_x[:,it] = current_x[:,0]
         return current_x, all_x
 
     def _iterate_multiple_timing(self,X,y,iterations=10):

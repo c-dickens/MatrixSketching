@@ -1,4 +1,5 @@
 import numpy as np 
+from timeit import default_timer as timer
 from gaussian_sketch import GaussianSketch
 from count_sketch import CountSketch
 from sparse_jlt import SparseJLT
@@ -65,7 +66,39 @@ class ClassicalSketch:
         weights = np.linalg.lstsq(SX, Sy,rcond=None)[0] # rcond = None is to ignore a warning flag.
         return weights
 
-    def fit(self,X,y,seed=100,in_svd=False):
+    def _time_sketch_solve(self,X,y,seed=100):
+        """
+        Times each of the individual process for sketch and solve methods
+        """
+        times = {
+        'Total'    : 0.,
+        'Sketch'   : 0.,
+        'SVD'      : 0.,
+        'Solve'    : 0.
+        }
+        TIMER_START = timer()
+
+        SKETCH_TIMER = timer()
+        self._sketch_data_targets(X,y,seed)
+        times['Sketch'] = timer() - SKETCH_TIMER
+
+        _sketch = self.sketcher.get(in_svd=False)
+        SX, Sy = _sketch[:,:-1], _sketch[:,-1].reshape(-1,1)
+
+        SVD_TIMER = timer()
+        u,sig,vt = np.linalg.svd(SX,full_matrices=False)
+        times['SVD'] = timer() - SVD_TIMER
+
+        SOLVE_TIME = timer()
+        sig = sig[:,np.newaxis]
+        sig_inv = 1./sig
+        weights = (vt.T@(sig_inv*u.T))@Sy
+        weights = np.linalg.lstsq(SX, Sy,rcond=None)[0]
+        times['Solve'] = timer() - SOLVE_TIME
+        times['Total']= timer() - TIMER_START
+        return weights, times
+
+    def fit(self,X,y,seed=100,in_svd=False,timing=False):
         """
         Fits the sketched regression model with a classical sketch to 
         data X and y.
@@ -73,11 +106,12 @@ class ClassicalSketch:
         Second step is to solve the regression instance, using either the lstsq
         solver, or in SVD format.
         """
+        if timing:
+            return self._time_sketch_solve(X,y,seed)
         self._sketch_data_targets(X,y,seed)
         weights = self._solve()
         return weights
        
-
 
 
         
