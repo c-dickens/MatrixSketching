@@ -1,0 +1,101 @@
+% This file was created by tikzplotlib v0.9.8.
+\begin{tikzpicture}
+
+\definecolor{color0}{rgb}{0.8,0.474509803921569,0.654901960784314}
+\definecolor{color1}{rgb}{0.901960784313726,0.623529411764706,0}
+\definecolor{color2}{rgb}{0.843137254901961,0.0980392156862745,0.109803921568627}
+\definecolor{color3}{rgb}{0.337254901960784,0.705882352941177,0.913725490196078}
+\definecolor{color4}{rgb}{0,0.447058823529412,0.698039215686274}
+
+\begin{axis}[
+legend cell align={left},
+legend columns=3,
+legend style={fill opacity=0.8, draw opacity=1, text opacity=1, at={(0.5,1.2)}, anchor=north, draw=none},
+log basis y={10},
+tick align=outside,
+tick pos=left,
+x grid style={white!69.0196078431373!black},
+xlabel={Iterations},
+xmajorgrids,
+xmin=0.55, xmax=10.45,
+xtick style={color=black},
+y grid style={white!69.0196078431373!black},
+ylabel={Log Coefficient Error},
+ymajorgrids,
+ymin=2.73283926944624e-07, ymax=0.00974216415913102,
+ymode=log,
+ytick style={color=black}
+]
+\addplot [semithick, color0, mark=square*, mark size=2, mark options={solid}]
+table {%
+1 0.0060498481307415
+2 0.0060498481307415
+3 0.0060498481307415
+4 0.0060498481307415
+5 0.0060498481307415
+6 0.0060498481307415
+7 0.0060498481307415
+8 0.0060498481307415
+9 0.0060498481307415
+10 0.0060498481307415
+};
+\addlegendentry{Classical}
+\addplot [semithick, color1, mark=asterisk, mark size=2.5, mark options={solid}]
+table {%
+1 0.0024302148890175
+2 0.0009724045028424
+3 0.0003589590045308
+4 0.0001390673632302
+5 5.81601935818677e-05
+6 2.27953180745049e-05
+7 9.36533167867313e-06
+8 4.04774662765923e-06
+9 1.46562166051953e-06
+10 6.07501206941536e-07
+};
+\addlegendentry{SRHT}
+\addplot [semithick, color2, dotted, mark=diamond*, mark size=2, mark options={solid}]
+table {%
+1 0.0022873796767818
+2 0.0009510310066865
+3 0.0003581285151647
+4 0.0001519355704301
+5 6.34104166879676e-05
+6 2.49443138619553e-05
+7 9.78728925032518e-06
+8 3.84809482352571e-06
+9 1.44329838928745e-06
+10 5.51477747470736e-07
+};
+\addlegendentry{Gaussian}
+\addplot [semithick, color3, dashed, mark=*, mark size=2, mark options={solid}]
+table {%
+1 0.0023041125560257
+2 0.000928910780175
+3 0.0003482188024387
+4 0.0001409091329941
+5 5.39886234198344e-05
+6 1.96042223082082e-05
+7 7.36748763174575e-06
+8 2.80270324072626e-06
+9 1.07510630137112e-06
+10 4.40073340819579e-07
+};
+\addlegendentry{SJLT}
+\addplot [semithick, color4, dash pattern=on 1pt off 3pt on 3pt off 3pt, mark=+, mark size=2, mark options={solid}]
+table {%
+1 0.0023355789704044
+2 0.0008989743067258
+3 0.0003690673265913
+4 0.0001364293258514
+5 5.57399758973128e-05
+6 2.17059050329824e-05
+7 8.79082039597918e-06
+8 3.51520201341434e-06
+9 1.30649172661245e-06
+10 4.66307819924127e-07
+};
+\addlegendentry{CountSketch}
+\end{axis}
+
+\end{tikzpicture}
