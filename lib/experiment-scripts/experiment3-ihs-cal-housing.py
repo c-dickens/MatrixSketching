@@ -74,7 +74,7 @@ def main(i,t,sparsify,s):
             while np.linalg.matrix_rank(X_train) != d:
                 if rank_count < 10:
                     print('IN SPARSIFY')
-                    X_train = sparsify_data(X_train_raw,sparsity=s,seed=seed+rank_count)
+                    X_train = sparsify_data(X_train_raw,sparsity=s,seed=seed+10*rank_count)
                     rank_count += 1
                 else:
                     raise Exception(f'Data rank-deficient more than 10 times at sparsity {s}.\
