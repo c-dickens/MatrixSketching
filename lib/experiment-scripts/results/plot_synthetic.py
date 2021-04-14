@@ -55,12 +55,14 @@ def coeffs_error_opt(df,fname):
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.2),
     fancybox=False, shadow=False, ncol=4,frameon=False)
     ax.set_yscale('log',base=10)
+    ax.set_xlim(0.5,10)
     ax.set_xticks(np.arange(5, 25, 5))
+    ax.set_xlabel('Iterations')
     #ax.set_xscale('log',base=10)
     ax.set_ylabel('Coeff Error Opt')
     #ax.set_ylim(1E-3,1)
     ax.grid()
-    out_fname = fname[:-4] + '-error-iterations.tex'
+    out_fname = OUT_DIR + fname[:-4] + '-error-iterations.tex'
     tikzplotlib.save(out_fname)
     
 
@@ -97,7 +99,7 @@ def coeffs_error_model(df,fname):
     #ax.plot(1+x,(d_over_n*np.ones_like(1+x)),**classical_plot_params['Optimal'])
     #ax.set_yscale('log',base=10)
     
-    out_fname = fname[:-4] + '-error-iterations.tex'
+    out_fname = OUT_DIR + fname[:-4] + '-error-iterations.tex'
     tikzplotlib.save(out_fname)
 
 
@@ -115,7 +117,6 @@ def main():
         elif i == 1:
             coeffs_error_opt(df,f)
         elif i == 2:
-            print(df.head())
             coeffs_error_model(df,f)
         print(i,f)
 if __name__ == '__main__':
