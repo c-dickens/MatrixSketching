@@ -22,7 +22,8 @@ def coeffs_vs_n(df,fname):
     for col in cols: #set(df.columns).difference(drop_rows):
         plot_kwargs = classical_plot_params[col]
         #if not in drop_ihs: #col != "Rows":
-        ax_c.plot(x,df[col]**2,**plot_kwargs)
+        plot_kwargs['label'] = col
+        ax_c.plot(x,df[col],**plot_kwargs)
         
     ax_c.legend(loc='upper center', bbox_to_anchor=(0.5, 1.3),
     fancybox=False, shadow=False, ncol=2,frameon=False)
@@ -33,7 +34,7 @@ def coeffs_vs_n(df,fname):
     #ax_c.legend(bbox_to_anchor=(1.05, 0.95),frameon=False)
     ax_c.grid()
     # Strip the .csv for file name
-    out_fname = fname[:-4] + '-model-error-n.tex'
+    out_fname = OUT_DIR + fname[:-4] + '-model-error-n.tex'
     tikzplotlib.save(out_fname)
 
 def coeffs_error_opt(df,fname):

@@ -39,7 +39,7 @@ def main(trials):
     for i,n in enumerate(nn):
         for t in range(num_trials):
             # * 0. Data setup and sparsification
-            y, A, x_model = experimental_data(n,d,1.0,seed=t*1000)
+            y, A, x_model = experimental_data(n,d,1.0,seed=t*10)
             sparse_data = SparseDataConverter(np.c_[A,y]).coo_data
             
 
