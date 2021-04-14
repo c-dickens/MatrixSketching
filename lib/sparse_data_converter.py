@@ -14,7 +14,9 @@ class SparseDataConverter:
         # Convert data into necessary format
         # LOGIC: if self.data is sparse just make references for later
         # otherwise, convert to sparse data.
-        if mat != None:
+        if mat is None:
+            pass 
+        else:
             if isinstance(mat, sparse.coo.coo_matrix):
                 self.coo_data = self.data
                 self.rows = self.coo_data.row
@@ -31,8 +33,6 @@ class SparseDataConverter:
                 self.rows = self.coo_data.row
                 self.cols = self.coo_data.col
                 self.vals = self.coo_data.data
-        else:
-            pass
 
     def make_coo_mat(self,row,col,val):
         """
