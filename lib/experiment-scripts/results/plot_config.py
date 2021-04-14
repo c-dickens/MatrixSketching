@@ -60,3 +60,52 @@ ihs_plot_params = {
     'SJLT'       : sjlt_ihs_params,
     'Classical'  : classical_params 
 }
+
+
+# ! For experiment 0
+classical_plot_params = {
+    'Classical CountSketch' : cnsk_ihs_params,
+    'Classical SJLT'         : sjlt_ihs_params,
+    'Classical SRHT'         : srht_ihs_params,
+    'Classical Gaussian'     : gauss_ihs_params,
+    'IHS CountSketch'        :{
+        'label'     : 'IHS CountSketch',
+        'color'     : my_palette[6],
+        'linewidth' : 1.5,
+        'linestyle' : '-.',
+        'marker'    : '2',
+        'markersize': 10.0
+    },
+    'IHS SJLT'              :{
+        'label'     : 'IHS: SJLT',
+        'color'     : my_palette[3], 
+        'linewidth' : 1.5,
+        'linestyle' : '--',
+        'marker'    : '|',
+        'markersize': 4.0
+    },
+   'IHS SRHT'              :{
+        'label'     : 'IHS: SRHT',
+        'color'     : my_palette[2],
+        'linewidth' : 1.5,
+        'linestyle' : '-',
+        'marker'    : '_',
+        'markersize': 5.0
+    },
+    'IHS Gaussian'          :{
+        'label'     : 'IHS: Gaussian',
+        'color'     : my_palette[-1],
+        'linewidth' : 1.5,
+        'linestyle' : ':',
+        'marker'    : 'd',
+        'markersize': 4.0
+        },
+    'Optimal'        :{
+        'label'     : 'Optimal',
+        'color'     : my_palette[4],
+        'linewidth' : 1.0,
+        'linestyle' : (0, (1, 10)),
+        'marker'    : '>',
+        'markersize': 10.0
+    },
+}
