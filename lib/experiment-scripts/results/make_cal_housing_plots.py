@@ -53,6 +53,8 @@ def coeffs_vs_wall_time(df,fname):
     # Strip the .csv for file name
     out_fname = OUT_DIR + fname[:-4] + '-error-wall-time.tex'
     tikzplotlib.save(out_fname)
+
+def plot_error_iterations_wall_time()
     
 def test_vs_iterations(df,fname):
     """
@@ -105,6 +107,52 @@ def test_vs_wall_time(df,fname):
     out_fname = OUT_DIR + fname[:-4] + 'test-error-wall-time.tex'
     tikzplotlib.save(out_fname)
 
+def all_error_time(files):
+    """
+    Generates the 3 x 1 plot of all wall clock times plots
+    """
+
+    fig=plt.figure(dpi=150)
+    ax1 = plt.subplot(311)
+    ax2 = plt.subplot(312)
+    ax3 = plt.subplot(313)
+    #plt.setp(ax2.get_yticklabels()[0], visible=False)
+    ax1.get_shared_x_axes().join(ax1, ax2)
+    ax3.get_shared_x_axes().join(ax1, ax2, ax3)
+    ax1.set_xticklabels([])
+    ax2.set_xticklabels([])
+    # ax2.autoscale() ## call autoscale if needed
+    fig.subplots_adjust(hspace=0.1)
+    
+    axes = [ax1, ax2, ax3]
+    for i,f in enumerate(files):
+        df = pd.read_csv(f,header=[0,1])
+        ax = axes[i]
+        for c in set(df.columns.get_level_values(0)):
+            total_time = 0.
+            if c != 'Exact(SVD)':
+                plot_kwargs = ihs_plot_params[c]
+                iter_time = df[c]['Sketch'] + df[c]['SVD'] + df[c]['Solve']
+                if c == 'Classical':
+                    ax.plot(iter_time.cumsum()[0],df[c,'Coefficient Error'][0],label=c,**plot_kwargs)
+                else:
+                    ax.plot(iter_time.cumsum(),df[c,'Coefficient Error'],label=c,**plot_kwargs)
+    # Formatting for all axes
+    for ax in axes:
+        ax.set_ylim(1E-6,1E-3)
+        ax.set_yscale('log',base=10)
+        ax.set_xscale('log',base=2)
+        ax.grid()
+        ax.axvline(x=df['Exact(SVD)', 'SVD'].iloc[0],color='black',linestyle=(0, (5, 1)),label='SVD')
+        ax.set_ylabel('Log Coefficient Error')
+    ax3.set_xlabel('Log (Time (seconds))')
+    
+    # Legend:
+    ax1.legend(loc='upper center', bbox_to_anchor=(0.5, 1.5),
+    fancybox=False, shadow=False, ncol=3,frameon=False) 
+    out_fname = 'cal_housing_all_wall_clock_times.tex'
+    tikzplotlib.save(out_fname)
+
 def main():
     files = [
         'experiment3-cal_housing.csv',
@@ -119,6 +167,8 @@ def main():
         coeffs_vs_wall_time(df,f)
         test_vs_iterations(df,f)
         test_vs_wall_time(df,f) 
+    all_error_time(files)
+    
 
 if __name__ == '__main__':
     main()
