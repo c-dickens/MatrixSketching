@@ -44,7 +44,7 @@ def main(n,d,i,t):
     for t in range(num_trials):
         print(f'Trial {t}')
         # * 0. Data setup and sparsification
-        y, A, x_model = experimental_data(n,d,1.0,seed=1000)
+        y, A, x_model = experimental_data(n,d,1.0,seed=1000*t)
         sparse_data = sparse.coo_matrix(A) #SparseDataConverter(A).coo_data
         x_opt = svd_solve(A,y)
         assert x_opt.shape == x_model.shape
