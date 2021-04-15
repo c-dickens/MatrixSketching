@@ -67,6 +67,10 @@ def main(i,t,sparsify,s):
         print(f'Trial {t}')
         seed = 500000*t
         np.random.seed(seed)
+        #Xy = np.concatenate((training_data,valid_data),axis=0)
+        np.random.shuffle(Xy)
+        X_train_raw, y_train = Xy[:,:-1], Xy[:,-1]
+        y_train = y_train[:,np.newaxis]
         if sparsify:
             rank_count = 1
             X_train = sparsify_data(X_train_raw,sparsity=s,seed=seed)
@@ -104,6 +108,7 @@ def main(i,t,sparsify,s):
         SVD_TIMER = timer()
         x_opt = svd_solve(A_train,y_train)
         svd_time = timer() - SVD_TIMER 
+        #print(x_opt.shape, d)
         assert x_opt.shape == (d,1)
         df['Exact(SVD)','SVD'] += svd_time
         df['Exact(SVD)', 'Test Error'] += test_mse(A_test,x_opt,y_test)
