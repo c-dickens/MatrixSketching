@@ -52,7 +52,7 @@ def main(i,t,sparsify,s):
     # s = 0.125
     num_iters = i
     num_trials = t
-    ihs_sketch_dims = [10*d]
+    ihs_sketch_dims = [int(5*d)]
     
     # * Results setup 
     file_path = 'results/experiment3-' + data_name 
@@ -65,7 +65,7 @@ def main(i,t,sparsify,s):
 
     for t in range(num_trials):
         print(f'Trial {t}')
-        seed = 500000*t
+        seed = 5000*t
         np.random.seed(seed)
         #Xy = np.concatenate((training_data,valid_data),axis=0)
         np.random.shuffle(Xy)
@@ -93,7 +93,7 @@ def main(i,t,sparsify,s):
         # y_train, y_test = y[train_ids,:], y[test_ids,:]
         # A_train, A_test = A[train_ids,:].tocoo(), A[test_ids,:]
         # y_train, y_test = y[train_ids,:], y[test_ids,:]
-        scaler =  Normalizer() # StandardScaler(with_mean=False) #  #
+        scaler =  Normalizer() #  #  #
         A_train = scaler.fit_transform(X_train)
         A_test = scaler.transform(X_test)
         A_train_sparse = coo_matrix(A_train)
@@ -137,6 +137,8 @@ def main(i,t,sparsify,s):
                 # Error performance
                 x_iter = x_hist[:,iter_round][:,np.newaxis]
                 df[sk_method,'Coefficient Error'][iter_round] += prediction_error(A_train,x_opt,x_iter)
+                # print(f'Prediction: {(A_test@x_iter)}')
+                # print(f'Label: {y_test}, {np.linalg.norm(y_test)}')
                 df[sk_method, 'Test Error'][iter_round] += test_mse(A_test,x_iter,y_test)
 
                 # Timing performance
@@ -166,6 +168,7 @@ def main(i,t,sparsify,s):
         file_path += str(s) + '.csv'
     else:
         file_path += '.csv'
+    print('Saving..........\n',file_path )
     df.to_csv(path_or_buf=file_path ,index=False)
     
 if __name__ == '__main__':

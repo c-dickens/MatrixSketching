@@ -75,4 +75,4 @@ def test_mse(test_mat,weights,test_targets):
     Returns the testing error 1/n_test * ||y_test - test_mat * weights||^2
     for a given set of weights
     """
-    return 1./test_mat.shape[0] * np.linalg.norm(test_targets - test_mat @ weights)**2
+    return np.sqrt(1./test_mat.shape[0] * np.linalg.norm(test_targets - test_mat @ weights)**2)
