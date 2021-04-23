@@ -1,0 +1,71 @@
+% This file was created by tikzplotlib v0.9.8.
+\begin{tikzpicture}
+
+\begin{groupplot}[group style={group size=2 by 1}]
+\nextgroupplot[
+legend cell align={left},
+legend style={
+  fill opacity=0.8,
+  draw opacity=1,
+  text opacity=1,
+  at={(0.03,0.97)},
+  anchor=north west,
+  draw=none
+},
+tick align=outside,
+tick pos=left,
+x grid style={white!69.0196078431373!black},
+xlabel={ },
+xmin=-0.5, xmax=1.5,
+xtick style={color=black},
+xtick={0,1},
+xticklabel style={rotate=45.0},
+xticklabels={CountSketch,SJLT},
+y grid style={white!69.0196078431373!black},
+ylabel={Time (Seconds)},
+ymin=0, ymax=0.00636109747700387,
+ytick style={color=black}
+]
+\draw[draw=black,fill=white!96.078431372549!black] (axis cs:-0.25,0) rectangle (axis cs:-0.125,0.00075292107649143);
+\addlegendimage{ybar,ybar legend,draw=black,fill=white!96.078431372549!black};
+\addlegendentry{12.5%}
+
+\draw[draw=black,fill=white!96.078431372549!black] (axis cs:0.75,0) rectangle (axis cs:0.875,0.00263201013207431);
+\draw[draw=black,fill=white!82.7450980392157!black] (axis cs:-0.125,0) rectangle (axis cs:0,0.00082904273644083);
+\addlegendimage{ybar,ybar legend,draw=black,fill=white!82.7450980392157!black};
+\addlegendentry{25%}
+
+\draw[draw=black,fill=white!82.7450980392157!black] (axis cs:0.875,0) rectangle (axis cs:1,0.00324328397773203);
+\draw[draw=black,fill=white!66.2745098039216!black] (axis cs:0,0) rectangle (axis cs:0.125,0.00101167667843396);
+\addlegendimage{ybar,ybar legend,draw=black,fill=white!66.2745098039216!black};
+\addlegendentry{50%}
+
+\draw[draw=black,fill=white!66.2745098039216!black] (axis cs:1,0) rectangle (axis cs:1.125,0.00403736475855106);
+\draw[draw=black,fill=white!41.1764705882353!black] (axis cs:0.125,0) rectangle (axis cs:0.25,0.00160987635701888);
+\addlegendimage{ybar,ybar legend,draw=black,fill=white!41.1764705882353!black};
+\addlegendentry{75%}
+
+\draw[draw=black,fill=white!41.1764705882353!black] (axis cs:1.125,0) rectangle (axis cs:1.25,0.00605818807333702);
+
+\nextgroupplot[
+tick align=outside,
+tick pos=left,
+x grid style={white!69.0196078431373!black},
+xmin=-0.5, xmax=1.5,
+xtick style={color=black},
+xtick={0,1},
+xticklabel style={rotate=45.0},
+xticklabels={SRHT,Gaussian},
+y grid style={white!69.0196078431373!black},
+ylabel={Time (Seconds)},
+ymin=0, ymax=0.101043479111278,
+ytick style={color=black}
+]
+\draw[draw=black,fill=white!41.1764705882353!black] (axis cs:-0.25,0) rectangle (axis cs:0.25,0.0168067629272118);
+\addlegendimage{ybar,ybar legend,draw=black,fill=white!41.1764705882353!black};
+\addlegendentry{0}
+
+\draw[draw=black,fill=white!41.1764705882353!black] (axis cs:0.75,0) rectangle (axis cs:1.25,0.0962318848678842);
+\end{groupplot}
+
+\end{tikzpicture}
