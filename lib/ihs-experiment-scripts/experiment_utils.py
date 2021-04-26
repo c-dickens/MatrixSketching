@@ -2,6 +2,8 @@
 A collection of useful functions for the experiments
 """
 import numpy as np
+from math import exp, floor
+from scipy.fftpack import dct
 
 
 # * Common sketching paradigms
@@ -26,6 +28,26 @@ def experimental_data(n,d, sigma=1.0,seed=100):
     y = A@x_model + w
     return y,A,x_model
 
+def shi_phillips_ridge_data(n,d,effective_rank,tail_strength=None,seed=100):
+    '''
+    Generates the low rank data from the shi-phillips paper.
+    ''' 
+    A = np.zeros((n,d),dtype=float)
+    if effective_rank is None:
+        effective_rank = 0.25 
+    r = effective_rank
+    for col in range(d):
+        arg = (col)**2/ r**2
+        std = exp(-arg) 
+        A[:,col] = np.random.normal(loc=0.0,scale=std**2,size=(n,))
+    x_star = np.zeros(d)
+    x_star[:r] = np.random.randn(r,)
+    x_star /= np.linalg.norm(x_star,2)
+    noise = np.random.normal(loc=0.0,scale=4.0,size=(n,))
+    X = dct(A)
+    y = X@x_star + noise
+    return X, y, x_star
+
 def svd_solve(a,b):
     u,sig,vt = np.linalg.svd(a,full_matrices=False)
     v = vt.T
@@ -40,6 +62,14 @@ def svd_solve(a,b):
     x_opt = (v@(sig_inv*u.T))@b
     # ! Beware of multindexed arrays which can affect error comparison
     # ! x_opt = x_opt[:,0]
+    return x_opt
+
+def svd_ridge_solve(X,y,gamma):
+    u,sig,vt = np.linalg.svd(X,full_matrices=False)
+    v = vt.T
+    sig = sig[:,np.newaxis]
+    diag_scaler = sig / (sig**2 + gamma)
+    x_opt = v@(diag_scaler * (u.T @ y))
     return x_opt
 
 def sparsify_data(mat, sparsity=0.2,seed=100):
