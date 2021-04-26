@@ -69,13 +69,18 @@ def svd_ridge_solve(X,y,gamma):
     """
     Solves the Ridge regression problem by SVD
     Includes dimensionality checking for y
+
+    Function is mathematically equivalent to 
+    H = X.T@X + gamma*np.eye(X.shape[1])
+    x_opt = np.linalg.solve(H,X.T@y)
     """
+    if y.ndim == 1:
+        y = y[:,np.newaxis]
     u, sig, vt = np.linalg.svd(X,full_matrices=False)
     sig = sig[:,np.newaxis]
     v = vt.T
     x_opt = v@(   (1./(sig**2 + gamma) * (sig * (u.T@y))))
-    # H = X.T@X + gamma*np.eye(X.shape[1])
-    # x_opt = np.linalg.solve(H,X.T@y)
+
     if y.ndim == 1:
         x_opt = np.squeeze(x_opt)
     return x_opt
@@ -117,7 +122,8 @@ def test_mse(test_mat,weights,test_targets):
     return np.sqrt(1./test_mat.shape[0] * np.linalg.norm(test_targets - test_mat @ weights)**2)
 
 def get_euclidean_errors(arr,x):
-    print(x.shape)
+    print('Array shape: ', arr.shape)
+    print('x shape ', x.shape)
     for i in range(arr.shape[1]):
         print(arr[:,i].shape)
     if x.ndim == 1:
