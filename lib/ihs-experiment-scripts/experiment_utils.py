@@ -66,13 +66,14 @@ def svd_solve(a,b):
     return x_opt
 
 def svd_ridge_solve(X,y,gamma):
-    if y.ndim == 1:
-        y = y[:,np.newaxis]
+    """
+    Solves the Ridge regression problem by SVD
+    Includes dimensionality checking for y
+    """
     u, sig, vt = np.linalg.svd(X,full_matrices=False)
     sig = sig[:,np.newaxis]
     v = vt.T
     x_opt = v@(   (1./(sig**2 + gamma) * (sig * (u.T@y))))
-    print('x_opt shape:', x_opt.shape)
     # H = X.T@X + gamma*np.eye(X.shape[1])
     # x_opt = np.linalg.solve(H,X.T@y)
     if y.ndim == 1:
