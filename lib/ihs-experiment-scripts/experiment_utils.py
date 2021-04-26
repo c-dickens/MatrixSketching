@@ -32,6 +32,7 @@ def shi_phillips_ridge_data(n,d,effective_rank,tail_strength=None,seed=100):
     '''
     Generates the low rank data from the shi-phillips paper.
     ''' 
+    np.random.seed(seed)
     A = np.zeros((n,d),dtype=float)
     if effective_rank is None:
         effective_rank = 0.25 
@@ -65,12 +66,19 @@ def svd_solve(a,b):
     return x_opt
 
 def svd_ridge_solve(X,y,gamma):
-    u,sig,vt = np.linalg.svd(X,full_matrices=False)
-    v = vt.T
+    if y.ndim == 1:
+        y = y[:,np.newaxis]
+    u, sig, vt = np.linalg.svd(X,full_matrices=False)
     sig = sig[:,np.newaxis]
-    diag_scaler = sig / (sig**2 + gamma)
-    x_opt = v@(diag_scaler * (u.T @ y))
+    v = vt.T
+    x_opt = v@(   (1./(sig**2 + gamma) * (sig * (u.T@y))))
+    print('x_opt shape:', x_opt.shape)
+    # H = X.T@X + gamma*np.eye(X.shape[1])
+    # x_opt = np.linalg.solve(H,X.T@y)
+    if y.ndim == 1:
+        x_opt = np.squeeze(x_opt)
     return x_opt
+
 
 def sparsify_data(mat, sparsity=0.2,seed=100):
     """
@@ -106,3 +114,14 @@ def test_mse(test_mat,weights,test_targets):
     for a given set of weights
     """
     return np.sqrt(1./test_mat.shape[0] * np.linalg.norm(test_targets - test_mat @ weights)**2)
+
+def get_euclidean_errors(arr,x):
+    print(x.shape)
+    for i in range(arr.shape[1]):
+        print(arr[:,i].shape)
+    if x.ndim == 1:
+        e = [np.linalg.norm(arr[:,i] - x)/np.linalg.norm(x) for i in range(arr.shape[1])]
+    else:
+        e = [np.linalg.norm(arr[:,i].reshape(-1,1) - x)/np.linalg.norm(x) for i in range(arr.shape[1])]
+    e.insert(0,1)
+    return e
