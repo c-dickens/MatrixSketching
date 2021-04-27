@@ -19,6 +19,7 @@ from timeit import default_timer as timer
 import pprint
 from iterative_ridge_regression import IterativeRidge
 from experiment_utils import svd_ridge_solve, get_euclidean_errors
+from scipy.sparse import coo_matrix
 
 def real_data_error_profile(data_name,sketch_size):
     '''
@@ -26,7 +27,7 @@ def real_data_error_profile(data_name,sketch_size):
     features
     '''
     # * Experimental parameters
-    n = 20000
+    n = 10000
     trials = 1
     iterations = 10
     # ds = DataFactory(n=n)
@@ -57,26 +58,25 @@ def real_data_error_profile(data_name,sketch_size):
         'iteration times' : { _ : np.zeros(trials,dtype=float) for _ in features},
         'all_times'       : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features}
     }
-    rpg_results = { 
+    rp_srht_results = { 
         'errors'          : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features},
         'build times'     : { _ : np.zeros(trials,dtype=float) for _ in features},
         'iteration times' : { _ : np.zeros(trials,dtype=float) for _ in features},
         'all_times'       : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features}
     }
-    rps_results = { 
+    rp_cntsk_results = { 
         'errors'          : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features},
         'build times'     : { _ : np.zeros(trials,dtype=float) for _ in features},
         'iteration times' : { _ : np.zeros(trials,dtype=float) for _ in features},
         'all_times'       : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features}
     }
-    ihs_g_results=  { 
+    ihs_srht_results =  { 
         'errors'          : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features},
         'build times'     : { _ : np.zeros(trials,dtype=float) for _ in features},
         'iteration times' : { _ : np.zeros(trials,dtype=float) for _ in features},
         'all_times'       : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features}
     }
-
-    ihs_s_results =  { 
+    ihs_countsketch_results =  { 
         'errors'          : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features},
         'build times'     : { _ : np.zeros(trials,dtype=float) for _ in features},
         'iteration times' : { _ : np.zeros(trials,dtype=float) for _ in features},
@@ -105,9 +105,10 @@ def real_data_error_profile(data_name,sketch_size):
                 X_poly = RBFSampler(gamma=0.0001, random_state=t,n_components=feature_hyper).fit_transform(X_sample)
             X = StandardScaler().fit_transform(X_poly)
             N,D = X.shape
+            X_train_sparse = coo_matrix(X) 
             g = np.linalg.norm(X,ord='fro')**2 / sketch_size 
             print('#'*10, f'\t GAMMA: G={g}, i={i} d={feature_hyper}\t', '#'*10)
-            print('MAtrix norm: ', np.linalg.norm(X,ord='fro')**2 / sketch_size)
+
             # # ! Optimal solution
             print('#'*60)
             print('Solving exactly: Data shape: ', X.shape)
@@ -117,11 +118,11 @@ def real_data_error_profile(data_name,sketch_size):
             exact_results['solve time'][feature_hyper][t] = solve_time
 
 
-            # # ! FD Sketching 
+            # ! FD Sketching 
             print('#'*10, '\t FREQUENT DIRECTIONS \t', '#'*10)
             #fdr = FDRidge(fd_dim=sketch_size,gamma=g)
             fdr = IterativeRidge(N,D,sk_dim=sketch_size,sk_mode='FD',gamma=g)
-            _, all_x,fd_measured = fdr.fast_iterate(X,y,iterations)
+            _, all_x,fd_measured = fdr.fit(X,y,iterations)
 
             fd_results['errors'][feature_hyper][:,t]             =  get_euclidean_errors(all_x,x_opt)
             fd_results['build times'][feature_hyper][t]          =  fd_measured['sketch time']
@@ -133,87 +134,97 @@ def real_data_error_profile(data_name,sketch_size):
             print('#'*10, '\t ROBUST FREQUENT DIRECTIONS \t', '#'*10)
             #rfdr = FDRidge(fd_dim=sketch_size,fd_mode='RFD',gamma=g)
             rfdr = IterativeRidge(N,D,sk_dim=sketch_size,sk_mode='RFD',gamma=g)
-            _, rfd_all_x,rfd_measured = rfdr.fast_iterate(X,y,iterations)
+            _, rfd_all_x,rfd_measured = rfdr.fit(X,y,iterations)
             
             rfd_results['errors'][feature_hyper][:,t]             =  get_euclidean_errors(rfd_all_x,x_opt)
             rfd_results['build times'][feature_hyper][t]          =  rfd_measured['sketch time']
             rfd_results['iteration times'][feature_hyper][t]      =  mean_iter_time_single(rfd_measured)
             rfd_results['all_times'][feature_hyper][:,t]          =  rfd_measured['all_times']
 
-            # # # ! Single Random sketches
-            # # print('#'*10, '\t GAUSS SINGLE \t', '#'*10)
-            # gauss_single = RPRidge(rp_dim=sketch_size,rp_mode='Gaussian',gamma=g)
-            # _, gauss_single_all_x, gauss_single_measured = gauss_single.iterate_single_timing(X,y,seed=i)
+            # # ! Single Random sketches
+            print('#'*10, '\t SRHT SINGLE \t', '#'*10)
+            srht_single = IterativeRidge(N,D,sk_dim=sketch_size,sk_mode='SRHT',gamma=g) # RPRidge(rp_dim=sketch_size,rp_mode='Gaussian',gamma=g)
+            _, srht_single_all_x, srht_single_measured = srht_single.fit(X,y,seed=i)
 
-            # rpg_results['errors'][feature_hyper][:,t]             =  get_errors(gauss_single_all_x,x_opt)
-            # rpg_results['build times'][feature_hyper][t]          =  gauss_single_measured['sketch time']
-            # rpg_results['iteration times'][feature_hyper][t]      =  mean_iter_time_single(gauss_single_measured)
-            # rpg_results['all_times'][feature_hyper][:,t]          =  gauss_single_measured['all_times']
+            rp_srht_results['errors'][feature_hyper][:,t]             =  get_euclidean_errors(srht_single_all_x,x_opt)
+            rp_srht_results['build times'][feature_hyper][t]          =  srht_single_measured['sketch time']
+            rp_srht_results['iteration times'][feature_hyper][t]      =  mean_iter_time_single(srht_single_measured)
+            rp_srht_results['all_times'][feature_hyper][:,t]          =  srht_single_measured['all_times']
 
-            # print('#'*10, '\t SJLT SINGLE \t', '#'*10)
-            # sjlt_single = RPRidge(rp_dim=sketch_size,rp_mode='SJLT',gamma=g)
-            # _, sjlt_single_all_x, sjlt_single_measured = sjlt_single.iterate_single_timing(X,y)
+            print('#'*10, '\t CountSketch SINGLE \t', '#'*10)
+            cntsk_single = IterativeRidge(N,D,sk_dim=sketch_size,sk_mode='CountSketch',gamma=g,sparse_data=X_train_sparse) #RPRidge(rp_dim=sketch_size,rp_mode='SJLT',gamma=g)
+            _, cntsk_single_all_x, cntsk_single_measured = cntsk_single.fit(X,y)
 
-            # rps_results['errors'][feature_hyper][:,t]             =  get_errors(sjlt_single_all_x,x_opt)
-            # rps_results['build times'][feature_hyper][t]          =  sjlt_single_measured['sketch time']
-            # rps_results['iteration times'][feature_hyper][t]      =  mean_iter_time_single(sjlt_single_measured)
-            # rps_results['all_times'][feature_hyper][:,t]          =  sjlt_single_measured['all_times']
+            rp_cntsk_results['errors'][feature_hyper][:,t]             =  get_euclidean_errors(cntsk_single_all_x,x_opt)
+            rp_cntsk_results['build times'][feature_hyper][t]          =  cntsk_single_measured['sketch time']
+            rp_cntsk_results['iteration times'][feature_hyper][t]      =  mean_iter_time_single(cntsk_single_measured)
+            rp_cntsk_results['all_times'][feature_hyper][:,t]          =  cntsk_single_measured['all_times']
 
-            # print('#'*10, '\t SJLT IHS \t', '#'*10)
-            # ihs_sjlt = RPRidge(rp_dim=sketch_size,rp_mode='SJLT',gamma=g)
-            # _, ihs_sjlt_all_x, ihs_sjlt_measured = ihs_sjlt.iterate_multiple_timing(X,y)
-             
-            # ihs_s_results['errors'][feature_hyper][:,t]              =  get_errors(ihs_sjlt_all_x,x_opt)
-            # ihs_s_results['build times'][feature_hyper][t]           =  ihs_sjlt_measured['sketch time']
-            # ihs_s_results['iteration times'][feature_hyper][t]       =  mean_iter_time_multi(ihs_sjlt_measured)
-            # ihs_s_results['all_times'][feature_hyper][:,t]           =  ihs_sjlt_measured['all_times']
 
-            # # ! Multi Random sketches
-            # print('#'*10, '\t GAUSS IHS \t', '#'*10)
-            # ihs_gauss = RPRidge(rp_dim=sketch_size,rp_mode='Gaussian',gamma=g)
-            # _, ihs_gauss_all_x, ihs_gauss_measured = ihs_gauss.iterate_multiple_timing(X,y)
+            # ! Multi Random sketches           
+            print('#'*10, '\t CountSketch IHS \t', '#'*10)
+            ihs_cntsk = IterativeRidge(N,D,sk_dim=sketch_size,sk_mode='CountSketch',gamma=g,sparse_data=X_train_sparse,ihs_mode='multi') #RPRidge(rp_dim=sketch_size,rp_mode='SJLT',gamma=g)
+            _, ihs_cntsk_all_x, ihs_cntsk_measured = ihs_cntsk.fit(X,y)
+            
+              
+            ihs_countsketch_results['errors'][feature_hyper][:,t]              =  get_euclidean_errors(ihs_cntsk_all_x,x_opt)
+            ihs_countsketch_results['build times'][feature_hyper][t]           =  np.sum(ihs_cntsk_measured['sketch time'])
+            ihs_countsketch_results['iteration times'][feature_hyper][t]       =  mean_iter_time_multi(ihs_cntsk_measured)
+            ihs_countsketch_results['all_times'][feature_hyper][:,t]           =  ihs_cntsk_measured['all_times']
 
-            # ihs_g_results['errors'][feature_hyper][:,t]              =  get_errors(ihs_gauss_all_x,x_opt)
-            # ihs_g_results['build times'][feature_hyper][t]           =  ihs_gauss_measured['sketch time']
-            # ihs_g_results['iteration times'][feature_hyper][t]       =  mean_iter_time_multi(ihs_gauss_measured)
-            # ihs_g_results['all_times'][feature_hyper][:,t]           =  ihs_gauss_measured['all_times']
+
+            print('#'*10, '\t SRHT IHS \t', '#'*10)
+            ihs_srht = IterativeRidge(N,D,sk_dim=sketch_size,sk_mode='SRHT',gamma=g,ihs_mode='multi')#  RPRidge(rp_dim=sketch_size,rp_mode='Gaussian',gamma=g)
+            _, ihs_srht_all_x, ihs_srht_measured = ihs_srht.fit(X,y)
+
+            ihs_srht_results['errors'][feature_hyper][:,t]              =  get_euclidean_errors(ihs_srht_all_x,x_opt)
+            ihs_srht_results['build times'][feature_hyper][t]           =  np.sum(ihs_srht_measured['sketch time'])
+            ihs_srht_results['iteration times'][feature_hyper][t]       =  mean_iter_time_multi(ihs_srht_measured)
+            ihs_srht_results['all_times'][feature_hyper][:,t]           =  ihs_srht_measured['all_times']
 
 
     # ! Prepare and save the results in json format 
     pp = pprint.PrettyPrinter(indent=4)
-    print('Gauss')
-    pp.pprint(fd_results)
+    # print('FD')
+    # pp.pprint(fd_results['errors'])
+    # print('SRHT-Single')
+    # pp.pprint(rp_srht_results['errors'])
+    # print('SRHT-Multi')
+    # pp.pprint(ihs_g_results['errors'])
     # # print('Gauss')
     # # pp.pprint(rpg_results)
-    # # print('ihs:Gauss')
-    # # pp.pprint(ihs_g_results)
-    # # # print('SJLT')
-    # # # pp.pprint(rps_results)
-    # # print('ihs:SJLT')
-    # # pp.pprint(ihs_s_results)
+    # print('ihs:SRHT')
+    # pp.pprint(ihs_srht_results)
+    # print('SJLT')
+    # pp.pprint(rp_cntsk_results)
+    # print('ihs:SJLT')
+    # pp.pprint(ihs_countsketch_results)
 
 
 
 
-    # results_file_name = 'results/experiment3-real-data/' + data_name + '.json'
-    # for d in [exact_results, fd_results, rfd_results, rpg_results, rps_results, ihs_g_results, ihs_s_results]:
-    #     for k,v in d.items():
-    #         for v_key, v_val in v.items():
-    #             if type(v_val) == np.ndarray:
-    #                 d[k][v_key] = v_val.tolist()
-    # all_results = {
-    #     'Exact'     : exact_results,
-    #     'FD'        : fd_results,
-    #     'RFD'       : rfd_results,
-    #     'Gauss'     : rpg_results,
-    #     'SJLT'      : rps_results,
-    #     'ihs:Gauss' : ihs_g_results,
-    #     'ihs:SJLT'  : ihs_s_results
-    # }
+    
+    
+    
+    results_file_name = 'results/real_data/error_profile' + data_name + '.json'
+    for d in [exact_results, fd_results, rfd_results, rp_srht_results, rp_cntsk_results, ihs_srht_results, ihs_countsketch_results]:
+        for k,v in d.items():
+            for v_key, v_val in v.items():
+                if type(v_val) == np.ndarray:
+                    d[k][v_key] = v_val.tolist()
+    all_results = {
+        'Exact'     : exact_results,
+        'FD'        : fd_results,
+        'RFD'       : rfd_results,
+        'SRHT'      : rp_srht_results,
+        'CountSketch'      : rp_cntsk_results,
+        'ihs:SRHT' : ihs_srht_results,
+        'ihs:CountSketch'  : ihs_countsketch_results
+    }
 
 
-    # with open(results_file_name, 'w') as fp:
-    #     json.dump(all_results, fp,sort_keys=True, indent=4)  
+    with open(results_file_name, 'w') as fp:
+        json.dump(all_results, fp,sort_keys=True, indent=4)  
 
 
 def main():
