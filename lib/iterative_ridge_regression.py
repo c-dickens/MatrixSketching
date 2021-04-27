@@ -144,6 +144,8 @@ class IterativeRidge:
             TIMER_START = timer()
             self.sketcher.sketch(X,batch_size=self.batch_size)
             _, SigSq, Vt, implicit_reg = self.sketcher.get_fd_outputs()
+            # * NB. If d not large enough then implicit reg will be small.
+            # print('Implicit reg: ', implicit_reg)
         else:
             TIMER_START = timer()
             self.sketcher.sketch(X,seed=109*seed)
