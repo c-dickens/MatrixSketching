@@ -93,12 +93,12 @@ def error_vs_sketch_size(n,d,sketch_size,r):
     ax.legend()
     ax.set_xlabel('Iterations')
     ax.set_ylabel('Error')
-    path = '/home/dickens/code/thesis-experiments/lib/fd-experiment-scripts/results/synthetic'
+    path = 'results/synthetic' # '/home/dickens/code/thesis-experiments/lib/fd-experiment-scripts/results/synthetic'
     fname = path + '/bound-test-' + str(r) + '.png'
     fig.savefig(fname,dpi=200,bbox_inches='tight',pad_inches=None)
 
     # ! Prepare and save the results in json format 
-    res_name = 'results/bound-test' + str(r) + '.json'
+    res_name = 'results/synthetic/bound-test' + str(r) + '.json'
     for d in [fd_errors,rfd_errors]:# fd_means, fd_stds]:#, rfd_errors, fd_times, rfd_times]:
         for k,v in d.items():
             if type(v) == np.ndarray:
