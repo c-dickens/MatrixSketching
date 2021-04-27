@@ -35,7 +35,9 @@ def error_vs_sketch_size(n,d,sketch_size,r):
 
             # ! FD Sketching 
             fdr = IterativeRidge(n,d,sk_dim=sketch_size,sk_mode='FD',gamma=g)
+            #fdr = IterativeRidge(fd_dim=sketch_size,gamma=g,fd_mode='FD')#(n,d,sketch_size,sk_mode='FD')  # 
             x_fd, all_fd_x,fd_measured = fdr.fast_iterate(X,y,iterations)
+            #x_fd, all_fd_x = fdr.iterate(X,y,iterations)
             fd_errors[a][:,t] =  get_euclidean_errors(all_fd_x,x_opt)
 
             
@@ -67,7 +69,7 @@ def error_vs_sketch_size(n,d,sketch_size,r):
     ax.legend()
     ax.set_xlabel('Iterations')
     ax.set_ylabel('Error')
-    path = 'results/synthetic' 
+    path = 'results/synthetic' # '/home/dickens/code/thesis-experiments/lib/fd-experiment-scripts/results/synthetic'
     fname = path + '/bound-test-' + str(r) + '.png'
     fig.savefig(fname,dpi=200,bbox_inches='tight',pad_inches=None)
 
