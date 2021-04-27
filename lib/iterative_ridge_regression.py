@@ -93,13 +93,13 @@ class IterativeRidge:
             # * NB. If d not large enough then implicit reg will be small.
             # print('Implicit reg: ', implicit_reg)
         else:
+            # Note that the SVD here causes an increase in the sketch time complexity.
             TIMER_START = timer()
             self.sketcher.sketch(X,seed=109*seed)
             _, sig, Vt = self.sketcher.get(in_svd=True)
             SigSq = sig**2
             implicit_reg = 0.0 # the randomised methods have no implicit reg parameters
         SKETCH_TIME = timer() - TIMER_START
-
 
         # Extra parameters we may need 
         XTy = (X.T@y).reshape(-1,1)

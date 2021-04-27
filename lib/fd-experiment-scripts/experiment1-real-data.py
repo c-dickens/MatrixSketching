@@ -27,9 +27,10 @@ def real_data_error_profile(data_name,sketch_size):
     features
     '''
     # * Experimental parameters
-    n = 10000
-    trials = 1
-    iterations = 10
+    n = 20000
+    trials = 5
+    fd_iterations = 15
+    rp_iterations = 45
     # ds = DataFactory(n=n)
     if data_name == 'CoverType':
         _ = np.load('../../datasets/covertype.npy')
@@ -47,45 +48,53 @@ def real_data_error_profile(data_name,sketch_size):
         'solve time' : { _ : np.zeros(trials,dtype=float) for _ in features}
     }
     fd_results =  { 
-        'errors'          : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features},
+        'errors'          : { _ : np.zeros((fd_iterations+1, trials),dtype=float) for _ in features},
         'build times'     : { _ : np.zeros(trials,dtype=float) for _ in features},
         'iteration times' : { _ : np.zeros(trials,dtype=float) for _ in features},
-        'all_times'       : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features}
+        'all_times'       : { _ : np.zeros((fd_iterations+1, trials),dtype=float) for _ in features}
     }
     rfd_results = { 
-        'errors'          : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features},
+        'errors'          : { _ : np.zeros((fd_iterations+1, trials),dtype=float) for _ in features},
         'build times'     : { _ : np.zeros(trials,dtype=float) for _ in features},
         'iteration times' : { _ : np.zeros(trials,dtype=float) for _ in features},
-        'all_times'       : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features}
+        'all_times'       : { _ : np.zeros((fd_iterations+1, trials),dtype=float) for _ in features}
     }
     rp_srht_results = { 
-        'errors'          : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features},
+        'errors'          : { _ : np.zeros((rp_iterations+1, trials),dtype=float) for _ in features},
         'build times'     : { _ : np.zeros(trials,dtype=float) for _ in features},
         'iteration times' : { _ : np.zeros(trials,dtype=float) for _ in features},
-        'all_times'       : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features}
+        'all_times'       : { _ : np.zeros((rp_iterations+1, trials),dtype=float) for _ in features}
     }
     rp_cntsk_results = { 
-        'errors'          : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features},
+        'errors'          : { _ : np.zeros((rp_iterations+1, trials),dtype=float) for _ in features},
         'build times'     : { _ : np.zeros(trials,dtype=float) for _ in features},
         'iteration times' : { _ : np.zeros(trials,dtype=float) for _ in features},
-        'all_times'       : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features}
+        'all_times'       : { _ : np.zeros((rp_iterations+1, trials),dtype=float) for _ in features}
     }
     ihs_srht_results =  { 
-        'errors'          : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features},
-        'build times'     : { _ : np.zeros(trials,dtype=float) for _ in features},
+        'errors'          : { _ : np.zeros((rp_iterations+1, trials),dtype=float) for _ in features},
+        'build times'     : { _ : np.zeros((rp_iterations,trials),dtype=float) for _ in features},
         'iteration times' : { _ : np.zeros(trials,dtype=float) for _ in features},
-        'all_times'       : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features}
+        'all_times'       : { _ : np.zeros((rp_iterations+1, trials),dtype=float) for _ in features}
     }
-    ihs_countsketch_results =  { 
-        'errors'          : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features},
-        'build times'     : { _ : np.zeros(trials,dtype=float) for _ in features},
+
+    ihs_sjlt_results =  { 
+        'errors'          : { _ : np.zeros((rp_iterations+1, trials),dtype=float) for _ in features},
+        'build times'     : { _ : np.zeros((rp_iterations,trials),dtype=float) for _ in features},
         'iteration times' : { _ : np.zeros(trials,dtype=float) for _ in features},
-        'all_times'       : { _ : np.zeros((iterations+1, trials),dtype=float) for _ in features}
+        'all_times'       : { _ : np.zeros((rp_iterations+1, trials),dtype=float) for _ in features}
+    }
+
+    ihs_countsketch_results =  { 
+        'errors'          : { _ : np.zeros((rp_iterations+1, trials),dtype=float) for _ in features},
+        'build times'     : { _ : np.zeros((rp_iterations,trials),dtype=float) for _ in features},
+        'iteration times' : { _ : np.zeros(trials,dtype=float) for _ in features},
+        'all_times'       : { _ : np.zeros((rp_iterations+1, trials),dtype=float) for _ in features}
     }
 
 
     mean_iter_time_single = lambda a : np.mean(a['all_times'][1:] - a['sketch time'])
-    mean_iter_time_multi = lambda a : np.mean(a['all_times'][1:] - a['sketch time']/iterations)
+    mean_iter_time_multi = lambda a,its : np.mean(a['all_times'][1:] - a['sketch time']/its)
 
     for t in range(trials):
         print('*'*10, '\t TRIAL ', t, '\t', '*'*10)
@@ -122,7 +131,7 @@ def real_data_error_profile(data_name,sketch_size):
             print('#'*10, '\t FREQUENT DIRECTIONS \t', '#'*10)
             #fdr = FDRidge(fd_dim=sketch_size,gamma=g)
             fdr = IterativeRidge(N,D,sk_dim=sketch_size,sk_mode='FD',gamma=g)
-            _, all_x,fd_measured = fdr.fit(X,y,iterations)
+            _, all_x,fd_measured = fdr.fit(X,y,fd_iterations)
 
             fd_results['errors'][feature_hyper][:,t]             =  get_euclidean_errors(all_x,x_opt)
             fd_results['build times'][feature_hyper][t]          =  fd_measured['sketch time']
@@ -134,7 +143,7 @@ def real_data_error_profile(data_name,sketch_size):
             print('#'*10, '\t ROBUST FREQUENT DIRECTIONS \t', '#'*10)
             #rfdr = FDRidge(fd_dim=sketch_size,fd_mode='RFD',gamma=g)
             rfdr = IterativeRidge(N,D,sk_dim=sketch_size,sk_mode='RFD',gamma=g)
-            _, rfd_all_x,rfd_measured = rfdr.fit(X,y,iterations)
+            _, rfd_all_x,rfd_measured = rfdr.fit(X,y,fd_iterations)
             
             rfd_results['errors'][feature_hyper][:,t]             =  get_euclidean_errors(rfd_all_x,x_opt)
             rfd_results['build times'][feature_hyper][t]          =  rfd_measured['sketch time']
@@ -144,16 +153,22 @@ def real_data_error_profile(data_name,sketch_size):
             # # ! Single Random sketches
             print('#'*10, '\t SRHT SINGLE \t', '#'*10)
             srht_single = IterativeRidge(N,D,sk_dim=sketch_size,sk_mode='SRHT',gamma=g) # RPRidge(rp_dim=sketch_size,rp_mode='Gaussian',gamma=g)
-            _, srht_single_all_x, srht_single_measured = srht_single.fit(X,y,seed=i)
+            _, srht_single_all_x, srht_single_measured = srht_single.fit(X,y,rp_iterations,seed=i)
 
             rp_srht_results['errors'][feature_hyper][:,t]             =  get_euclidean_errors(srht_single_all_x,x_opt)
             rp_srht_results['build times'][feature_hyper][t]          =  srht_single_measured['sketch time']
             rp_srht_results['iteration times'][feature_hyper][t]      =  mean_iter_time_single(srht_single_measured)
             rp_srht_results['all_times'][feature_hyper][:,t]          =  srht_single_measured['all_times']
 
+
+            
             print('#'*10, '\t CountSketch SINGLE \t', '#'*10)
+            # ! Sparse methods using NUMBA need to compile the sketch so let's do that ahead of time
+            # ! so that the timing experiment is not compromised.
             cntsk_single = IterativeRidge(N,D,sk_dim=sketch_size,sk_mode='CountSketch',gamma=g,sparse_data=X_train_sparse) #RPRidge(rp_dim=sketch_size,rp_mode='SJLT',gamma=g)
-            _, cntsk_single_all_x, cntsk_single_measured = cntsk_single.fit(X,y)
+            if t == 0:
+                _, cntsk_single_all_x, cntsk_single_measured = cntsk_single.fit(X,y)
+            _, cntsk_single_all_x, cntsk_single_measured = cntsk_single.fit(X,y,rp_iterations,seed=i)
 
             rp_cntsk_results['errors'][feature_hyper][:,t]             =  get_euclidean_errors(cntsk_single_all_x,x_opt)
             rp_cntsk_results['build times'][feature_hyper][t]          =  cntsk_single_measured['sketch time']
@@ -164,22 +179,39 @@ def real_data_error_profile(data_name,sketch_size):
             # ! Multi Random sketches           
             print('#'*10, '\t CountSketch IHS \t', '#'*10)
             ihs_cntsk = IterativeRidge(N,D,sk_dim=sketch_size,sk_mode='CountSketch',gamma=g,sparse_data=X_train_sparse,ihs_mode='multi') #RPRidge(rp_dim=sketch_size,rp_mode='SJLT',gamma=g)
-            _, ihs_cntsk_all_x, ihs_cntsk_measured = ihs_cntsk.fit(X,y)
+            if t == 0:
+                # ! Sparse methods using NUMBA need to compile the sketch so let's do that ahead of time
+                # ! so that the timing experiment is not compromised.
+                _, ihs_cntsk_all_x, ihs_cntsk_measured = ihs_cntsk.fit(X,y)    
+            _, ihs_cntsk_all_x, ihs_cntsk_measured = ihs_cntsk.fit(X,y,rp_iterations,seed=i)
             
               
             ihs_countsketch_results['errors'][feature_hyper][:,t]              =  get_euclidean_errors(ihs_cntsk_all_x,x_opt)
-            ihs_countsketch_results['build times'][feature_hyper][t]           =  np.sum(ihs_cntsk_measured['sketch time'])
-            ihs_countsketch_results['iteration times'][feature_hyper][t]       =  mean_iter_time_multi(ihs_cntsk_measured)
+            ihs_countsketch_results['build times'][feature_hyper][:,t]           =  ihs_cntsk_measured['sketch time']
+            ihs_countsketch_results['iteration times'][feature_hyper][t]       =  mean_iter_time_multi(ihs_cntsk_measured,rp_iterations)
             ihs_countsketch_results['all_times'][feature_hyper][:,t]           =  ihs_cntsk_measured['all_times']
+
+            print('#'*10, '\t SJLT IHS \t', '#'*10)
+            ihs_sjlt = IterativeRidge(N,D,sk_dim=sketch_size,sk_mode='SJLT',sjlt_sparsity=5,gamma=g,sparse_data=X_train_sparse,ihs_mode='multi') #RPRidge(rp_dim=sketch_size,rp_mode='SJLT',gamma=g)
+            if t == 0:
+                # ! Sparse methods using NUMBA need to compile the sketch so let's do that ahead of time
+                # ! so that the timing experiment is not compromised.
+                _, _, _ = ihs_sjlt.fit(X,y)    
+            _, ihs_sjlt_all_x, ihs_sjlt_measured = ihs_sjlt.fit(X,y,rp_iterations,seed=i)
+            
+            ihs_sjlt_results['errors'][feature_hyper][:,t]              =  get_euclidean_errors(ihs_sjlt_all_x,x_opt)
+            ihs_sjlt_results['build times'][feature_hyper][:,t]         =  ihs_sjlt_measured['sketch time']
+            ihs_sjlt_results['iteration times'][feature_hyper][t]       =  mean_iter_time_multi(ihs_sjlt_measured,rp_iterations)
+            ihs_sjlt_results['all_times'][feature_hyper][:,t]           =  ihs_sjlt_measured['all_times']
 
 
             print('#'*10, '\t SRHT IHS \t', '#'*10)
             ihs_srht = IterativeRidge(N,D,sk_dim=sketch_size,sk_mode='SRHT',gamma=g,ihs_mode='multi')#  RPRidge(rp_dim=sketch_size,rp_mode='Gaussian',gamma=g)
-            _, ihs_srht_all_x, ihs_srht_measured = ihs_srht.fit(X,y)
+            _, ihs_srht_all_x, ihs_srht_measured = ihs_srht.fit(X,y,rp_iterations,seed=i)
 
             ihs_srht_results['errors'][feature_hyper][:,t]              =  get_euclidean_errors(ihs_srht_all_x,x_opt)
-            ihs_srht_results['build times'][feature_hyper][t]           =  np.sum(ihs_srht_measured['sketch time'])
-            ihs_srht_results['iteration times'][feature_hyper][t]       =  mean_iter_time_multi(ihs_srht_measured)
+            ihs_srht_results['build times'][feature_hyper][:,t]           =  ihs_srht_measured['sketch time']
+            ihs_srht_results['iteration times'][feature_hyper][t]       =  mean_iter_time_multi(ihs_srht_measured,rp_iterations)
             ihs_srht_results['all_times'][feature_hyper][:,t]           =  ihs_srht_measured['all_times']
 
 
@@ -202,12 +234,8 @@ def real_data_error_profile(data_name,sketch_size):
 
 
 
-
-    
-    
-    
-    results_file_name = 'results/real_data/error_profile' + data_name + '.json'
-    for d in [exact_results, fd_results, rfd_results, rp_srht_results, rp_cntsk_results, ihs_srht_results, ihs_countsketch_results]:
+    results_file_name = 'results/real_data/error_profile-' + data_name + '.json'
+    for d in [exact_results, fd_results, rfd_results, rp_srht_results, rp_cntsk_results, ihs_srht_results, ihs_sjlt_results, ihs_countsketch_results]:
         for k,v in d.items():
             for v_key, v_val in v.items():
                 if type(v_val) == np.ndarray:
@@ -219,6 +247,7 @@ def real_data_error_profile(data_name,sketch_size):
         'SRHT'      : rp_srht_results,
         'CountSketch'      : rp_cntsk_results,
         'ihs:SRHT' : ihs_srht_results,
+        'ihs:SJLT' : ihs_sjlt_results,
         'ihs:CountSketch'  : ihs_countsketch_results
     }
 
@@ -228,7 +257,7 @@ def real_data_error_profile(data_name,sketch_size):
 
 
 def main():
-    datasets = ['CoverType']
+    datasets = ['w8a']
     for d in datasets:
         real_data_error_profile(d,300) 
 
