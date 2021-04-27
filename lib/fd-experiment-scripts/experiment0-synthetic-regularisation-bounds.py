@@ -39,7 +39,7 @@ def error_vs_sketch_size(n,d,sketch_size,r):
     trials = 1
     iterations = 5
     eff_rank = int(floor(r*d + 0.5))
-    g_range = [2]#[-1,0,1,2]
+    g_range = [-1,0,1,2]
     
     # * Results data structures
     fd_errors = {g : np.zeros((iterations+1, trials),dtype=float) for g in g_range}
@@ -56,63 +56,61 @@ def error_vs_sketch_size(n,d,sketch_size,r):
 
             # ! Optimal solution
             x_opt = svd_ridge_solve(X,y,g)
-            print('x opt shape: ', x_opt.shape)
 
             # ! FD Sketching 
             fdr = IterativeRidge(n,d,sk_dim=sketch_size,sk_mode='FD',gamma=g)
             #fdr = IterativeRidge(fd_dim=sketch_size,gamma=g,fd_mode='FD')#(n,d,sketch_size,sk_mode='FD')  # 
             x_fd, all_fd_x,fd_measured = fdr.fast_iterate(X,y,iterations)
             #x_fd, all_fd_x = fdr.iterate(X,y,iterations)
-            print('x_FD shape: ', x_fd.shape)
-            print(all_fd_x.shape)
             fd_errors[a][:,t] =  get_euclidean_errors(all_fd_x,x_opt)
 
             
             # ! RFD Sketching  #  (fd_dim=sketch_size,fd_mode='RFD',gamma=g)
             # rfdr = IterativeRidge(fd_dim=sketch_size,gamma=g,fd_mode='RFD')#(n,d,sketch_size, sk_mode='RFD')
-            # _, rfd_all_x,rfd_measured = rfdr.fast_iterate(X,y,iterations)
-            # rfd_errors[a][:,t] = get_euclidean_errors(rfd_all_x,x_opt)
+            rfdr = IterativeRidge(n,d,sk_dim=sketch_size,sk_mode='RFD',gamma=g)
+            x_rfd, rfd_all_x, rfd_measured = rfdr.fast_iterate(X,y,iterations)
+            rfd_errors[a][:,t] = get_euclidean_errors(rfd_all_x,x_opt)
     print(fd_errors)
-    #print(rfd_errors)
+    print(rfd_errors)
     # ! Results setup  and plotting
-    # fig, ax = plt.subplots()
-    # for i,g in enumerate(gammas):
-    #     a = g_range[i]
+    fig, ax = plt.subplots()
+    for i,g in enumerate(gammas):
+        a = g_range[i]
 
-    #     # * FD
-    #     fd_errs = fd_errors[a]
-    #     fd_mean_errs = np.mean(fd_errs,axis=1)
-    #     fd_std_errs = np.std(fd_errs,axis=1)
-    #     ax.errorbar(range(iterations+1),fd_mean_errs,yerr=fd_std_errs, label=f'g=2^{a}*(1/m)')
+        # * FD
+        fd_errs = fd_errors[a]
+        fd_mean_errs = np.mean(fd_errs,axis=1)
+        fd_std_errs = np.std(fd_errs,axis=1)
+        ax.errorbar(range(iterations+1),fd_mean_errs,yerr=fd_std_errs, label=f'g=2^{a}*(1/m)')
 
-    #     # * RFD
-    #     rfd_errs = rfd_errors[a]
-    #     rfd_mean_errs = np.mean(rfd_errs,axis=1)
-    #     rfd_std_errs = np.std(rfd_errs,axis=1)
-    #     ax.errorbar(range(iterations+1),rfd_mean_errs,yerr=rfd_std_errs, label=f'Rg=2^{a}*(1/m)')
-    # ax.legend()
-    # ax.set_yscale('log',base=10)
-    # ax.legend()
-    # ax.set_xlabel('Iterations')
-    # ax.set_ylabel('Error')
-    # path = '/home/dickens/code/thesis-experiments/lib/fd-experiment-scripts/results/synthetic'
-    # fname = path + '/bound-test-' + str(r) + '.png'
-    # fig.savefig(fname,dpi=200,bbox_inches='tight',pad_inches=None)
+        # * RFD
+        rfd_errs = rfd_errors[a]
+        rfd_mean_errs = np.mean(rfd_errs,axis=1)
+        rfd_std_errs = np.std(rfd_errs,axis=1)
+        ax.errorbar(range(iterations+1),rfd_mean_errs,yerr=rfd_std_errs, label=f'Rg=2^{a}*(1/m)')
+    ax.legend()
+    ax.set_yscale('log',base=10)
+    ax.legend()
+    ax.set_xlabel('Iterations')
+    ax.set_ylabel('Error')
+    path = '/home/dickens/code/thesis-experiments/lib/fd-experiment-scripts/results/synthetic'
+    fname = path + '/bound-test-' + str(r) + '.png'
+    fig.savefig(fname,dpi=200,bbox_inches='tight',pad_inches=None)
 
-    # # ! Prepare and save the results in json format 
-    # res_name = 'results/bound-test' + str(r) + '.json'
-    # for d in [fd_errors,rfd_errors]:# fd_means, fd_stds]:#, rfd_errors, fd_times, rfd_times]:
-    #     for k,v in d.items():
-    #         if type(v) == np.ndarray:
-    #             d[k] = v.tolist()
-    # results = {
-    #     'FD Error'   : fd_errors,
-    #     'RFD Error'   : rfd_errors,
-    #     # 'FD Means'   : fd_means, 
-    #     # 'FD Stds'    : fd_stds
-    #     }
-    # with open(res_name, 'w') as fp:
-    #     json.dump(results, fp,sort_keys=True, indent=4)
+    # ! Prepare and save the results in json format 
+    res_name = 'results/bound-test' + str(r) + '.json'
+    for d in [fd_errors,rfd_errors]:# fd_means, fd_stds]:#, rfd_errors, fd_times, rfd_times]:
+        for k,v in d.items():
+            if type(v) == np.ndarray:
+                d[k] = v.tolist()
+    results = {
+        'FD Error'   : fd_errors,
+        'RFD Error'   : rfd_errors,
+        # 'FD Means'   : fd_means, 
+        # 'FD Stds'    : fd_stds
+        }
+    with open(res_name, 'w') as fp:
+        json.dump(results, fp,sort_keys=True, indent=4)
 
 
    

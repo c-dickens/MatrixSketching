@@ -122,10 +122,13 @@ def test_mse(test_mat,weights,test_targets):
     return np.sqrt(1./test_mat.shape[0] * np.linalg.norm(test_targets - test_mat @ weights)**2)
 
 def get_euclidean_errors(arr,x):
-    print('Array shape: ', arr.shape)
-    print('x shape ', x.shape)
-    for i in range(arr.shape[1]):
-        print(arr[:,i].shape)
+    """
+    Returns euclidena error to x for all columns in arr
+    """
+    # print('Array shape: ', arr.shape)
+    # print('x shape ', x.shape)
+    # for i in range(arr.shape[1]):
+    #     print(arr[:,i].shape)
     if x.ndim == 1:
         e = [np.linalg.norm(arr[:,i] - x)/np.linalg.norm(x) for i in range(arr.shape[1])]
     else:
