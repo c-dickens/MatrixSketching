@@ -109,3 +109,22 @@ classical_plot_params = {
         'markersize': 10.0
     },
 }
+
+
+# ! Frequent Directions parameters
+fd_synthetic_params = {
+    'color' : 'grey',
+    'linestyle' : ':',
+}
+
+rfd_synthetic_params = {
+    'color' : 'black',
+    'linestyle' : '-',
+}
+
+fd_experiment0_markers = {
+    '-1' : {'marker' : 'o', 'markersize':5},
+    '0'  : {'marker' : 'x', 'markersize':5},
+    '1'  : {'marker' : '^', 'markersize':5},
+    '2'  : {'marker' : 's', 'markersize':5},
+}
