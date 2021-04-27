@@ -1,0 +1,191 @@
+% This file was created by tikzplotlib v0.9.8.
+\begin{tikzpicture}
+
+\begin{groupplot}[group style={group size=2 by 1}]
+\nextgroupplot[
+log basis y={10},
+tick align=outside,
+tick pos=left,
+x grid style={white!69.0196078431373!black},
+xlabel={Iterations},
+xmin=-0.25, xmax=5.25,
+xtick style={color=black},
+y grid style={white!69.0196078431373!black},
+ylabel={Error},
+ymin=6.22772735034334e-09, ymax=2.45893025134433,
+ymode=log,
+ytick style={color=black}
+]
+\addplot [semithick, white!50.1960784313725!black, dotted, mark=*, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.217982196224818
+2 0.0676886211033092
+3 0.0262667895872185
+4 0.0111922660666172
+5 0.00496835356330154
+};
+\addplot [semithick, black, mark=*, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.100002731357163
+2 0.0180257101846896
+3 0.00530339726304495
+4 0.00188483032652539
+5 0.000712477630064242
+};
+\addplot [semithick, white!50.1960784313725!black, dotted, mark=x, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.13636882889173
+2 0.0216467220445022
+3 0.00397883995637306
+4 0.00081167834635335
+5 0.000176115176995995
+};
+\addplot [semithick, black, mark=x, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.0629770511055278
+2 0.00513465284993486
+3 0.000610945061508462
+4 9.77483388014467e-05
+5 1.78643887875355e-05
+};
+\addplot [semithick, white!50.1960784313725!black, dotted, mark=triangle*, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.0841143958231729
+2 0.00746398787037992
+3 0.00070203180201413
+4 6.99041265887139e-05
+5 7.31505131722379e-06
+};
+\addplot [semithick, black, mark=triangle*, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.039339911086274
+2 0.00170689464756463
+3 8.79540207357479e-05
+4 5.83749526512062e-06
+5 4.82355564268158e-07
+};
+\addplot [semithick, white!50.1960784313725!black, dotted, mark=square*, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.0492536829525963
+2 0.00247239204843623
+3 0.000126557661355852
+4 6.61033954978137e-06
+5 3.52304923518585e-07
+};
+\addplot [semithick, black, mark=square*, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.0233028140886313
+2 0.000566542934022982
+3 1.472242765784e-05
+4 4.32879520246142e-07
+5 1.53135471788837e-08
+};
+
+\nextgroupplot[
+legend cell align={left},
+legend columns=4,
+legend style={fill opacity=0.8, draw opacity=1, text opacity=1, at={(0,1.25)}, anchor=north, draw=none},
+log basis y={10},
+tick align=outside,
+tick pos=left,
+x grid style={white!69.0196078431373!black},
+xlabel={Iterations},
+xmin=-0.25, xmax=5.25,
+xtick style={color=black},
+y grid style={white!69.0196078431373!black},
+ylabel={Error},
+ymin=1.24751395467146e-06, ymax=1.91047207754355,
+ymode=log,
+ytick style={color=black}
+]
+\addplot [semithick, white!50.1960784313725!black, dotted, mark=*, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.551932692499867
+2 0.345973317898214
+3 0.229692414143702
+4 0.157810962420282
+5 0.110957073204631
+};
+\addlegendentry{$Fa=-1$}
+\addplot [semithick, black, mark=*, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.464270912014708
+2 0.266879838477032
+3 0.166311466200072
+4 0.107239965873942
+5 0.0707871365579001
+};
+\addlegendentry{$Ra=-1$}
+\addplot [semithick, white!50.1960784313725!black, dotted, mark=x, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.283489622939806
+2 0.0900604987921622
+3 0.0301745944745096
+4 0.0104418612241345
+5 0.00369373755387085
+};
+\addlegendentry{$Fa=0$}
+\addplot [semithick, black, mark=x, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.237577533063967
+2 0.0689870938464113
+3 0.0216267964127771
+4 0.00700780038669349
+5 0.00232265586165948
+};
+\addlegendentry{$Ra=0$}
+\addplot [semithick, white!50.1960784313725!black, dotted, mark=triangle*, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.14402920191117
+2 0.0230695762226025
+3 0.00388706927413028
+4 0.000675606308259847
+5 0.000119952256516521
+};
+\addlegendentry{$Fa=1$}
+\addplot [semithick, black, mark=triangle*, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.120490586276456
+2 0.0176216124240184
+3 0.00277191363782505
+4 0.000450635151763732
+5 7.48927820846817e-05
+};
+\addlegendentry{$Ra=1$}
+\addplot [semithick, white!50.1960784313725!black, dotted, mark=square*, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.0726549318682015
+2 0.00584620049609996
+3 0.000494141184498555
+4 4.30534294674726e-05
+5 3.83026176802543e-06
+};
+\addlegendentry{$Fa=2$}
+\addplot [semithick, black, mark=square*, mark size=2.5, mark options={solid}]
+table {%
+0 1
+1 0.0607315499449377
+2 0.00446122011239143
+3 0.000351533004483299
+4 2.86334296538463e-05
+5 2.38334057674575e-06
+};
+\addlegendentry{$Ra=2$}
+\end{groupplot}
+
+\end{tikzpicture}
