@@ -71,6 +71,9 @@ class IterativeRidge:
     def fast_iterate_single(self,X,y,iterations,seed=100):
         """
         Performs the iterations of ifdrr efficiently in small space and time.
+
+        NB. The sketch time include sketch + SVD for randomised method.
+        update time returns Add time
         """
 
         # * Initialisation not timed
@@ -145,6 +148,9 @@ class IterativeRidge:
     def fast_iterate_multi(self,X,y,iterations,seed=100):
         """
         Performs the iterations of ifdrr efficiently in small space and time.
+
+
+        NB. The update time returns SVD + Add time
         """
 
         # * Initialisation not timed
@@ -165,7 +171,7 @@ class IterativeRidge:
             self.sketcher.sketch(X,seed=1000*it)
             measurables['sketch time'][it] = timer() - SKETCH_TIMER
 
-            SVD_TIMER = timer()
+            UPDATE_TIMER_START = timer()
             u,sig,Vt = self.sketcher.get(in_svd=True)
             sig = sig[:,np.newaxis]
             SigSq = sig**2
@@ -175,7 +181,7 @@ class IterativeRidge:
             VTg = Vt@grad
             update = H_inv_grad(grad, VTg, Vt.T)
             w += - update
-            measurables['update time'][it] = timer() - TIMER_START
+            measurables['update time'][it] = timer() - UPDATE_TIMER_START
             measurables['all_times'][it+1] = timer() - TIMER_START
             all_w[:,it] = np.squeeze(w)
         measurables['total']= timer() - TIMER_START

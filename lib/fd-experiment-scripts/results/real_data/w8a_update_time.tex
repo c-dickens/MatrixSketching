@@ -14,16 +14,16 @@ xtick={0,1,2,3},
 xticklabel style={rotate=45.0},
 xticklabels={CountSketch,FD,RFD,SRHT},
 y grid style={white!69.0196078431373!black},
-ymin=0, ymax=0.0221208972530439,
+ymin=0, ymax=0.10995609325706,
 ytick style={color=black}
 ]
-\draw[draw=none,fill=color0] (axis cs:-0.25,0) rectangle (axis cs:0.25,0.0198549535358325);
+\draw[draw=none,fill=color0] (axis cs:-0.25,0) rectangle (axis cs:0.25,0.0956207676635434);
 \addlegendimage{ybar,ybar legend,draw=none,fill=color0};
 \addlegendentry{0}
 
-\draw[draw=none,fill=color0] (axis cs:0.75,0) rectangle (axis cs:1.25,0.0210675211933752);
-\draw[draw=none,fill=color0] (axis cs:1.75,0) rectangle (axis cs:2.25,0.020441802792872);
-\draw[draw=none,fill=color0] (axis cs:2.75,0) rectangle (axis cs:3.25,0.0184344044188038);
+\draw[draw=none,fill=color0] (axis cs:0.75,0) rectangle (axis cs:1.25,0.101673267277268);
+\draw[draw=none,fill=color0] (axis cs:1.75,0) rectangle (axis cs:2.25,0.104720088816248);
+\draw[draw=none,fill=color0] (axis cs:2.75,0) rectangle (axis cs:3.25,0.0976467354300742);
 
 \nextgroupplot[
 tick align=outside,
@@ -35,12 +35,14 @@ xtick={0,1,2},
 xticklabel style={rotate=45.0},
 xticklabels={ihs:CountSketch,ihs:SJLT,ihs:SRHT},
 y grid style={white!69.0196078431373!black},
-ymin=0, ymax=0.129757724217682,
-ytick style={color=black}
+ymin=0, ymax=0.602508687243875,
+ytick style={color=black},
+ytick={0,0.1,0.2,0.3,0.4,0.5,0.6,0.7},
+yticklabels={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7}
 ]
-\draw[draw=none,fill=color0] (axis cs:-0.25,0) rectangle (axis cs:0.25,0.108744593337178);
-\draw[draw=none,fill=color0] (axis cs:0.75,0) rectangle (axis cs:1.25,0.123578784969221);
-\draw[draw=none,fill=color0] (axis cs:1.75,0) rectangle (axis cs:2.25,0.111347532468951);
+\draw[draw=none,fill=color0] (axis cs:-0.25,0) rectangle (axis cs:0.25,0.548426218786173);
+\draw[draw=none,fill=color0] (axis cs:0.75,0) rectangle (axis cs:1.25,0.573817797375119);
+\draw[draw=none,fill=color0] (axis cs:1.75,0) rectangle (axis cs:2.25,0.562282661653848);
 \end{groupplot}
 
 \end{tikzpicture}

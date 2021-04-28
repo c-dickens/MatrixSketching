@@ -12,16 +12,16 @@ xmin=-0.5, xmax=1.5,
 xtick style={color=black},
 xtick={0,1},
 xticklabel style={rotate=45.0},
-xticklabels={CountSketch,ihs:CountSketch},
+xticklabels={CountSketch,SRHT},
 y grid style={white!69.0196078431373!black},
-ymin=0, ymax=7.66837247391231,
+ymin=0, ymax=1.97138247387134,
 ytick style={color=black}
 ]
-\draw[draw=none,fill=color0] (axis cs:-0.25,0) rectangle (axis cs:0.25,0.247142423992045);
+\draw[draw=none,fill=color0] (axis cs:-0.25,0) rectangle (axis cs:0.25,0.257332211965695);
 \addlegendimage{ybar,ybar legend,draw=none,fill=color0};
 \addlegendentry{0}
 
-\draw[draw=none,fill=color0] (axis cs:0.75,0) rectangle (axis cs:1.25,7.30321187991649);
+\draw[draw=none,fill=color0] (axis cs:0.75,0) rectangle (axis cs:1.25,1.87750711797271);
 
 \nextgroupplot[
 tick align=outside,
@@ -31,16 +31,16 @@ xmin=-0.5, xmax=4.5,
 xtick style={color=black},
 xtick={0,1,2,3,4},
 xticklabel style={rotate=45.0},
-xticklabels={FD,RFD,SRHT,ihs:SJLT,ihs:SRHT},
+xticklabels={FD,RFD,ihs:CountSketch,ihs:SJLT,ihs:SRHT},
 y grid style={white!69.0196078431373!black},
-ymin=0, ymax=84.0172392746375,
+ymin=0, ymax=84.0198259990371,
 ytick style={color=black}
 ]
-\draw[draw=none,fill=color0] (axis cs:-0.25,0) rectangle (axis cs:0.25,16.7176635849755);
-\draw[draw=none,fill=color0] (axis cs:0.75,0) rectangle (axis cs:1.25,16.6186744879233);
-\draw[draw=none,fill=color0] (axis cs:1.75,0) rectangle (axis cs:2.25,1.89121290598996);
-\draw[draw=none,fill=color0] (axis cs:2.75,0) rectangle (axis cs:3.25,28.1471247647423);
-\draw[draw=none,fill=color0] (axis cs:3.75,0) rectangle (axis cs:4.25,80.0164183567977);
+\draw[draw=none,fill=color0] (axis cs:-0.25,0) rectangle (axis cs:0.25,16.7881796967704);
+\draw[draw=none,fill=color0] (axis cs:0.75,0) rectangle (axis cs:1.25,16.691772682406);
+\draw[draw=none,fill=color0] (axis cs:1.75,0) rectangle (axis cs:2.25,7.2884376316797);
+\draw[draw=none,fill=color0] (axis cs:2.75,0) rectangle (axis cs:3.25,28.2384470687248);
+\draw[draw=none,fill=color0] (axis cs:3.75,0) rectangle (axis cs:4.25,80.0188819038449);
 \end{groupplot}
 
 \end{tikzpicture}

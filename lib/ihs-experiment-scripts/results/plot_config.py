@@ -128,3 +128,34 @@ fd_experiment0_markers = {
     '1'  : {'marker' : '^', 'markersize':5},
     '2'  : {'marker' : 's', 'markersize':5},
 }
+
+fd_real_data_plot_config = {
+    'FD' : {
+        'color':my_palette[0],
+        'marker':'2',
+        'linestyle' : ':',
+        'markersize':8.0
+    },
+    'RFD': {
+        'color':my_palette[1],
+        'marker':'x',
+        'markersize':5
+    },
+    'SRHT' : {
+        'color' : my_palette[7],
+        'marker': '^',
+        'linewidth' : 1.5,
+        'markersize':4.0
+        
+    },
+    'ihs:SRHT' : ihs_plot_params['SRHT'], #srht_ihs_params,
+    'ihs:SJLT' : ihs_plot_params['SJLT'],
+    'CountSketch' : ihs_plot_params['Classical'],
+    'ihs:CountSketch' : {
+            'color'     : my_palette[6],#'#2c7bb6', # 'royalblue',
+        'linewidth' : 1.5,
+        'linestyle' : '-.',
+        'marker'    : '+',
+        'markersize': 8.0
+    }
+}

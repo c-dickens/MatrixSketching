@@ -135,7 +135,7 @@ def real_data_error_profile(data_name,sketch_size):
 
             fd_results['errors'][feature_hyper][:,t]             =  get_euclidean_errors(all_x,x_opt)
             fd_results['build times'][feature_hyper][t]          =  fd_measured['sketch time']
-            fd_results['iteration times'][feature_hyper][t]      =  mean_iter_time_single(fd_measured)
+            fd_results['iteration times'][feature_hyper][t]      =  np.mean(fd_measured['update time']) #mean_iter_time_single(fd_measured)
             fd_results['all_times'][feature_hyper][:,t]          =  fd_measured['all_times']
 
 
@@ -147,7 +147,7 @@ def real_data_error_profile(data_name,sketch_size):
             
             rfd_results['errors'][feature_hyper][:,t]             =  get_euclidean_errors(rfd_all_x,x_opt)
             rfd_results['build times'][feature_hyper][t]          =  rfd_measured['sketch time']
-            rfd_results['iteration times'][feature_hyper][t]      =  mean_iter_time_single(rfd_measured)
+            rfd_results['iteration times'][feature_hyper][t]      =  np.mean(rfd_measured['update time']) #mean_iter_time_single(rfd_measured)
             rfd_results['all_times'][feature_hyper][:,t]          =  rfd_measured['all_times']
 
             # # ! Single Random sketches
@@ -157,7 +157,7 @@ def real_data_error_profile(data_name,sketch_size):
 
             rp_srht_results['errors'][feature_hyper][:,t]             =  get_euclidean_errors(srht_single_all_x,x_opt)
             rp_srht_results['build times'][feature_hyper][t]          =  srht_single_measured['sketch time']
-            rp_srht_results['iteration times'][feature_hyper][t]      =  mean_iter_time_single(srht_single_measured)
+            rp_srht_results['iteration times'][feature_hyper][t]      =  np.mean(srht_single_measured['update time']) #  mean_iter_time_single(srht_single_measured)
             rp_srht_results['all_times'][feature_hyper][:,t]          =  srht_single_measured['all_times']
 
 
@@ -172,9 +172,8 @@ def real_data_error_profile(data_name,sketch_size):
 
             rp_cntsk_results['errors'][feature_hyper][:,t]             =  get_euclidean_errors(cntsk_single_all_x,x_opt)
             rp_cntsk_results['build times'][feature_hyper][t]          =  cntsk_single_measured['sketch time']
-            rp_cntsk_results['iteration times'][feature_hyper][t]      =  mean_iter_time_single(cntsk_single_measured)
+            rp_cntsk_results['iteration times'][feature_hyper][t]      =  np.mean(cntsk_single_measured['update time']) #mean_iter_time_single(cntsk_single_measured)
             rp_cntsk_results['all_times'][feature_hyper][:,t]          =  cntsk_single_measured['all_times']
-
 
             # ! Multi Random sketches           
             print('#'*10, '\t CountSketch IHS \t', '#'*10)
@@ -187,8 +186,8 @@ def real_data_error_profile(data_name,sketch_size):
             
               
             ihs_countsketch_results['errors'][feature_hyper][:,t]              =  get_euclidean_errors(ihs_cntsk_all_x,x_opt)
-            ihs_countsketch_results['build times'][feature_hyper][:,t]           =  ihs_cntsk_measured['sketch time']
-            ihs_countsketch_results['iteration times'][feature_hyper][t]       =  mean_iter_time_multi(ihs_cntsk_measured,rp_iterations)
+            ihs_countsketch_results['build times'][feature_hyper][:,t]         =  ihs_cntsk_measured['sketch time']
+            ihs_countsketch_results['iteration times'][feature_hyper][t]       =  np.mean(ihs_cntsk_measured['update time']) #mean_iter_time_multi(ihs_cntsk_measured,rp_iterations)
             ihs_countsketch_results['all_times'][feature_hyper][:,t]           =  ihs_cntsk_measured['all_times']
 
             print('#'*10, '\t SJLT IHS \t', '#'*10)
@@ -201,7 +200,7 @@ def real_data_error_profile(data_name,sketch_size):
             
             ihs_sjlt_results['errors'][feature_hyper][:,t]              =  get_euclidean_errors(ihs_sjlt_all_x,x_opt)
             ihs_sjlt_results['build times'][feature_hyper][:,t]         =  ihs_sjlt_measured['sketch time']
-            ihs_sjlt_results['iteration times'][feature_hyper][t]       =  mean_iter_time_multi(ihs_sjlt_measured,rp_iterations)
+            ihs_sjlt_results['iteration times'][feature_hyper][t]       =  np.mean(ihs_sjlt_measured['update time']) # mean_iter_time_multi(ihs_sjlt_measured,rp_iterations)
             ihs_sjlt_results['all_times'][feature_hyper][:,t]           =  ihs_sjlt_measured['all_times']
 
 
@@ -210,8 +209,8 @@ def real_data_error_profile(data_name,sketch_size):
             _, ihs_srht_all_x, ihs_srht_measured = ihs_srht.fit(X,y,rp_iterations,seed=i)
 
             ihs_srht_results['errors'][feature_hyper][:,t]              =  get_euclidean_errors(ihs_srht_all_x,x_opt)
-            ihs_srht_results['build times'][feature_hyper][:,t]           =  ihs_srht_measured['sketch time']
-            ihs_srht_results['iteration times'][feature_hyper][t]       =  mean_iter_time_multi(ihs_srht_measured,rp_iterations)
+            ihs_srht_results['build times'][feature_hyper][:,t]         =  ihs_srht_measured['sketch time']
+            ihs_srht_results['iteration times'][feature_hyper][t]       =  np.mean(ihs_srht_measured['update time']) #mean_iter_time_multi(ihs_srht_measured,rp_iterations)
             ihs_srht_results['all_times'][feature_hyper][:,t]           =  ihs_srht_measured['all_times']
 
 
@@ -257,7 +256,7 @@ def real_data_error_profile(data_name,sketch_size):
 
 
 def main():
-    datasets = ['w8a']
+    datasets = ['CoverType','w8a']
     for d in datasets:
         real_data_error_profile(d,300) 
 
