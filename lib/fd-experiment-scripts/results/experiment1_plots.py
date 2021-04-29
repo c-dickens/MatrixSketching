@@ -160,6 +160,41 @@ def error_time_plot(dataset,feature_hyper):
     out_fname = OUT_DIR +  dataset + '_error_time.tex'
     tikzplotlib.save(out_fname)
 
+def error_iterations_time(dataset,feature_hyper):
+    file = FPATH + dataset + '.json'
+    with open(file) as json_file:
+        data_dict = json.load(json_file)
+    
+    fig, axes = plt.subplots(dpi=150,ncols=2)
+    ax_iters, ax_time = axes
+    for k,v in data_dict.items():
+        if k == 'Exact':
+             continue
+        error = np.squeeze(np.mean(data_dict[k]['errors'][feature_hyper],axis=1))
+        times = np.squeeze(np.mean(data_dict[k]['all_times'][feature_hyper],axis=1))
+        _plot_params = fd_real_data_plot_config[k]
+        #_plot_params['label'] = k
+        ax_iters.plot(error,**_plot_params)
+        ax_time.plot(times,error,**_plot_params)
+        
+    #ax_iters.legend(frameon=False)
+    ax_iters.set_ylim(1E-15,10.)
+    ax_iters.set_yscale('log',base=10)
+    ax_iters.set_xlabel('Iterations')
+    ax_iters.set_ylabel('Relative Error')
+    ax_iters.grid()
+    
+    ax_time.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05),frameon=False,ncol=2)
+    ax_time.set_ylim(1E-15,10.)
+    ax_time.set_yscale('log',base=10)
+    ax_time.set_xlabel('Time')
+    ax_time.set_ylabel('Relative Error')
+    ax_time.grid()
+    fpath = FPATH[:10] + dataset + '_error_profile'
+    fig.savefig(fpath)
+    out_fname = OUT_DIR +  dataset + '_error_profile.tex'
+    tikzplotlib.save(out_fname)
+
 
 
 def main():
@@ -175,6 +210,7 @@ def main():
         update_time_plot(f[0],f[1])
         error_iterations_plot(f[0],f[1])
         error_time_plot(f[0],f[1])
+        error_iterations_time(f[0],f[1])
         
 
 
